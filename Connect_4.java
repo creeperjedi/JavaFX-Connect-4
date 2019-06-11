@@ -313,8 +313,7 @@ public class Connect_4 extends Application {
         GridPane.setConstraints(startGameHuman, 1, 7);
         GridPane.setConstraints(startGameComputer, 3, 7);
         
-        grid.getChildren().addAll(topLabel, /*blueThickLabel, redThickLabel, blueThin, blueThick, redThin, redThick, redSolid, */
-        		pickOponent, startGameHuman, startGameComputer);
+        grid.getChildren().addAll(topLabel, pickOponent, startGameHuman, startGameComputer);
         	
         //Main Menu Display
     	window.setTitle("JavaFX Connect 4");
