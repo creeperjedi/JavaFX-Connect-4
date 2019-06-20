@@ -88,8 +88,8 @@ public class Connect_4 extends Application {
     Circle F6 = new Circle();
     Circle F7 = new Circle();
 
-    AudioClip gameEnd = new AudioClip(this.getClass().getResource("Game.wav").toString());
-    AudioClip backgroundMusic = new AudioClip(this.getClass().getResource("Background.wav").toString());
+    AudioClip gameEnd = new AudioClip(this.getClass().getResource("gameOver.wav").toString());
+    AudioClip backgroundMusic = new AudioClip(this.getClass().getResource("backgroundMusic.mp3").toString());
     
     String winner;
 	double windowHeight;
