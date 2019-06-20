@@ -745,6 +745,12 @@ public class Connect_4 extends Application {
 					&& backBoard[lastRow-1][lastCol+1] == backBoard[lastRow][lastCol]
 					&& backBoard[lastRow+1][lastCol-1] == backBoard[lastRow][lastCol])
 				playerHasWon = true;
+		//3 to the top Right
+		if (lastCol + 3 <= 6 && lastRow - 3 >= 0)
+			if (backBoard[lastRow-3][lastCol+3] == backBoard[lastRow][lastCol]
+					&& backBoard[lastRow-2][lastCol+2] == backBoard[lastRow][lastCol]
+					&& backBoard[lastRow-1][lastCol+1] == backBoard[lastRow][lastCol])
+				playerHasWon = true;
 		//3 to the bottom Right
 		if (lastCol+3 <=6 && lastRow+3 <=5)
 			if (backBoard[lastRow+1][lastCol+1] == backBoard[lastRow][lastCol]
