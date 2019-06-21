@@ -115,7 +115,6 @@ public class Connect_4 extends Application {
     @Override
     public void start(Stage primaryStage) {
     	window = primaryStage;
-    	
     	//Assigns the boardPane to the gameScreen Scene
         gameScreen = new Scene(boardPane);
         
@@ -194,6 +193,11 @@ public class Connect_4 extends Application {
         	window.centerOnScreen();
         	});
         
+        Button viewCredits = new Button("View credits");
+        viewCredits.setOnAction(e -> {
+        	System.out.println("test");
+        	CreditsWindow.display();
+        	});
         
         /* Listens for changes in the dimensions of the Scene, and resizes the boardOverlay accordingly
          * Also repositions the Circles so that they stay in their respective positions
@@ -312,8 +316,10 @@ public class Connect_4 extends Application {
         
         GridPane.setConstraints(startGameHuman, 1, 7);
         GridPane.setConstraints(startGameComputer, 3, 7);
-        
-        grid.getChildren().addAll(topLabel, pickOponent, startGameHuman, startGameComputer);
+        GridPane.setConstraints(viewCredits, 1, 9, 3, 1);
+        GridPane.setFillWidth(viewCredits, true);
+        viewCredits.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+        grid.getChildren().addAll(topLabel, pickOponent, startGameHuman, startGameComputer, viewCredits);
         	
         //Main Menu Display
     	window.setTitle("JavaFX Connect 4");
