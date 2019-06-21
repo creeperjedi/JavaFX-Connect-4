@@ -195,7 +195,6 @@ public class Connect_4 extends Application {
         
         Button viewCredits = new Button("View credits");
         viewCredits.setOnAction(e -> {
-        	System.out.println("test");
         	CreditsWindow.display();
         	});
         
