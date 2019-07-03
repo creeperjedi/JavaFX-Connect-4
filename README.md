@@ -1,5 +1,5 @@
 # JavaFX-Connect-4
-Simple game of Connect 4 made using JavaFX
+A simple game of Connect 4 made using JavaFX. Includes music and a CPU opponent.
 
 To build, just throw all of the files in your favorite Java IDE and run Connect_4.java.
 ## Credits
