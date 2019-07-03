@@ -88,8 +88,8 @@ public class Connect_4 extends Application {
     Circle F6 = new Circle();
     Circle F7 = new Circle();
 
-    AudioClip gameEnd = new AudioClip(this.getClass().getResource("gameOver.wav").toString());
-    AudioClip backgroundMusic = new AudioClip(this.getClass().getResource("backgroundMusic.mp3").toString());
+    AudioClip gameEnd = new AudioClip(this.getClass().getResource("/res/gameOver.wav").toString());
+    AudioClip backgroundMusic = new AudioClip(this.getClass().getResource("/res/backgroundMusic.mp3").toString());
     
     String winner;
 	double windowHeight;
@@ -121,7 +121,7 @@ public class Connect_4 extends Application {
         windowHeight = window.getHeight();
         windowWidth = window.getWidth();
         
-        Image boardOverlayPNG = new Image("boardOverlay.png");
+        Image boardOverlayPNG = new Image("/res/boardOverlay.png");
         boardOverlay = new ImageView(boardOverlayPNG);
         boardOverlay.setFitWidth(windowWidth);
         boardOverlay.setFitHeight(windowHeight);
