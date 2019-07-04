@@ -212,7 +212,6 @@ public class Connect_4 extends Application {
                 System.out.println("Width: " + newSceneWidth);
                 boardOverlay.setFitWidth((double) newSceneWidth);
                 resizedWidth = (double) newSceneWidth;
-                double circleRadius = column1.getBorder() / 2;
                 
                 //Sets the rightBorder for each Column
         		column1.setBorder(resizedWidth / 7);
@@ -231,6 +230,8 @@ public class Connect_4 extends Application {
         		column5.setCenter(column4.getBorder());
         		column6.setCenter(column5.getBorder());
         		column7.setCenter(column6.getBorder());
+        		
+        		double circleRadius = column1.getBorder() / 2;
         		
         		//Sets the CenterX and Radius for each Circle
         		for(GamePiece piece: col1GamePieces) {
