@@ -12,7 +12,6 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.media.AudioClip;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import java.util.Random;
 
@@ -45,49 +44,56 @@ public class Connect_4 extends Application {
      * E1, E2, E3, E4, E5, E6, E7
      * F1, F2, F3, F4, F5, F6, F7
      */
-    Circle A1 = new Circle();
-    Circle A2 = new Circle();
-    Circle A3 = new Circle();
-    Circle A4 = new Circle();
-    Circle A5 = new Circle();
-    Circle A6 = new Circle();
-    Circle A7 = new Circle();
-    Circle B1 = new Circle();
-    Circle B2 = new Circle();
-    Circle B3 = new Circle();
-    Circle B4 = new Circle();
-    Circle B5 = new Circle();
-    Circle B6 = new Circle();
-    Circle B7 = new Circle();
-    Circle C1 = new Circle();
-    Circle C2 = new Circle();
-    Circle C3 = new Circle();
-    Circle C4 = new Circle();
-    Circle C5 = new Circle();
-    Circle C6 = new Circle();
-    Circle C7 = new Circle();
-    Circle D1 = new Circle();
-    Circle D2 = new Circle();
-    Circle D3 = new Circle();
-    Circle D4 = new Circle();
-    Circle D5 = new Circle();
-    Circle D6 = new Circle();
-    Circle D7 = new Circle();
-    Circle E1 = new Circle();
-    Circle E2 = new Circle();
-    Circle E3 = new Circle();
-    Circle E4 = new Circle();
-    Circle E5 = new Circle();
-    Circle E6 = new Circle();
-    Circle E7 = new Circle();
-    Circle F1 = new Circle();
-    Circle F2 = new Circle();
-    Circle F3 = new Circle();
-    Circle F4 = new Circle();
-    Circle F5 = new Circle();
-    Circle F6 = new Circle();
-    Circle F7 = new Circle();
-
+    GamePiece A1 = new GamePiece('A', 1);
+    GamePiece A2 = new GamePiece('A', 2);
+    GamePiece A3 = new GamePiece('A', 3);
+    GamePiece A4 = new GamePiece('A', 4);
+    GamePiece A5 = new GamePiece('A', 5);
+    GamePiece A6 = new GamePiece('A', 6);
+    GamePiece A7 = new GamePiece('A', 7);
+    GamePiece B1 = new GamePiece('B', 1);
+    GamePiece B2 = new GamePiece('B', 2);
+    GamePiece B3 = new GamePiece('B', 3);
+    GamePiece B4 = new GamePiece('B', 4);
+    GamePiece B5 = new GamePiece('B', 5);
+    GamePiece B6 = new GamePiece('B', 6);
+    GamePiece B7 = new GamePiece('B', 7);
+    GamePiece C1 = new GamePiece('C', 1);
+    GamePiece C2 = new GamePiece('C', 2);
+    GamePiece C3 = new GamePiece('C', 3);
+    GamePiece C4 = new GamePiece('C', 4);
+    GamePiece C5 = new GamePiece('C', 5);
+    GamePiece C6 = new GamePiece('C', 6);
+    GamePiece C7 = new GamePiece('C', 7);
+    GamePiece D1 = new GamePiece('D', 1);
+    GamePiece D2 = new GamePiece('D', 2);
+    GamePiece D3 = new GamePiece('D', 3);
+    GamePiece D4 = new GamePiece('D', 4);
+    GamePiece D5 = new GamePiece('D', 5);
+    GamePiece D6 = new GamePiece('D', 6);
+    GamePiece D7 = new GamePiece('D', 7);
+    GamePiece E1 = new GamePiece('E', 1);
+    GamePiece E2 = new GamePiece('E', 2);
+    GamePiece E3 = new GamePiece('E', 3);
+    GamePiece E4 = new GamePiece('E', 4);
+    GamePiece E5 = new GamePiece('E', 5);
+    GamePiece E6 = new GamePiece('E', 6);
+    GamePiece E7 = new GamePiece('E', 7);
+    GamePiece F1 = new GamePiece('F', 1);
+    GamePiece F2 = new GamePiece('F', 2);
+    GamePiece F3 = new GamePiece('F', 3);
+    GamePiece F4 = new GamePiece('F', 4);
+    GamePiece F5 = new GamePiece('F', 5);
+    GamePiece F6 = new GamePiece('F', 6);
+    GamePiece F7 = new GamePiece('F', 7);
+    GamePiece[] col1GamePieces = new GamePiece[]{F1, E1, D1, C1, B1, A1};
+    GamePiece[] col2GamePieces = new GamePiece[]{F2, E2, D2, C2, B2, A2};
+    GamePiece[] col3GamePieces = new GamePiece[]{F3, E3, D3, C3, B3, A3};
+    GamePiece[] col4GamePieces = new GamePiece[]{F4, E4, D4, C4, B4, A4};
+    GamePiece[] col5GamePieces = new GamePiece[]{F5, E5, D5, C5, B5, A5};
+    GamePiece[] col6GamePieces = new GamePiece[]{F6, E6, D6, C6, B6, A6};
+    GamePiece[] col7GamePieces = new GamePiece[]{F7, E7, D7, C7, B7, A7};
+    
     AudioClip gameEnd = new AudioClip(this.getClass().getResource("/res/gameOver.wav").toString());
     AudioClip backgroundMusic = new AudioClip(this.getClass().getResource("/res/backgroundMusic.mp3").toString());
     
@@ -206,6 +212,7 @@ public class Connect_4 extends Application {
                 System.out.println("Width: " + newSceneWidth);
                 boardOverlay.setFitWidth((double) newSceneWidth);
                 resizedWidth = (double) newSceneWidth;
+                double circleRadius = column1.getBorder() / 2;
                 
                 //Sets the rightBorder for each Column
         		column1.setBorder(resizedWidth / 7);
@@ -225,51 +232,41 @@ public class Connect_4 extends Application {
         		column6.setCenter(column5.getBorder());
         		column7.setCenter(column6.getBorder());
         		
-        		//Sets the CenterX for each Circle
-        		A1.setCenterX(column1.getCenter());	B1.setCenterX(column1.getCenter());	C1.setCenterX(column1.getCenter());
-        		D1.setCenterX(column1.getCenter());	E1.setCenterX(column1.getCenter());	F1.setCenterX(column1.getCenter());
+        		//Sets the CenterX and Radius for each Circle
+        		for(GamePiece piece: col1GamePieces) {
+        			piece.setCenterX(column1.getCenter());
+        			piece.setRadius(circleRadius);
+        		}
         		
-        		A2.setCenterX(column2.getCenter());	B2.setCenterX(column2.getCenter());	C2.setCenterX(column2.getCenter());
-        		D2.setCenterX(column2.getCenter());	E2.setCenterX(column2.getCenter());	F2.setCenterX(column2.getCenter());
+        		for(GamePiece piece: col2GamePieces) {
+        			piece.setCenterX(column2.getCenter());
+        			piece.setRadius(circleRadius);
+        		}
         		
-        		A3.setCenterX(column3.getCenter());	B3.setCenterX(column3.getCenter());	C3.setCenterX(column3.getCenter());
-        		D3.setCenterX(column3.getCenter());	E3.setCenterX(column3.getCenter());	F3.setCenterX(column3.getCenter());
+        		for(GamePiece piece: col3GamePieces) {
+        			piece.setCenterX(column3.getCenter());
+        			piece.setRadius(circleRadius);
+        		}
         		
-        		A4.setCenterX(column4.getCenter());	B4.setCenterX(column4.getCenter()); C4.setCenterX(column4.getCenter());
-        		D4.setCenterX(column4.getCenter()); E4.setCenterX(column4.getCenter());	F4.setCenterX(column4.getCenter());
+        		for(GamePiece piece: col4GamePieces) {
+        			piece.setCenterX(column4.getCenter());
+        			piece.setRadius(circleRadius);
+        		}
         		
-        		A5.setCenterX(column5.getCenter());	B5.setCenterX(column5.getCenter()); C5.setCenterX(column5.getCenter());
-        		D5.setCenterX(column5.getCenter()); E5.setCenterX(column5.getCenter());	F5.setCenterX(column5.getCenter());
+        		for(GamePiece piece: col5GamePieces) {
+        			piece.setCenterX(column5.getCenter());
+        			piece.setRadius(circleRadius);
+        		}
         		
-        		A6.setCenterX(column6.getCenter());	B6.setCenterX(column6.getCenter()); C6.setCenterX(column6.getCenter());
-        		D6.setCenterX(column6.getCenter()); E6.setCenterX(column6.getCenter());	F6.setCenterX(column6.getCenter());
+        		for(GamePiece piece: col6GamePieces) {
+        			piece.setCenterX(column6.getCenter());
+        			piece.setRadius(circleRadius);
+        		}
         		
-        		A7.setCenterX(column7.getCenter());	B7.setCenterX(column7.getCenter()); C7.setCenterX(column7.getCenter());
-        		D7.setCenterX(column7.getCenter()); E7.setCenterX(column7.getCenter());	F7.setCenterX(column7.getCenter());
-        		
-        		//Sets the Radius for each Circle
-        		double circleRadius = column1.getBorder() / 2;
-        		A1.setRadius(circleRadius);	B1.setRadius(circleRadius);   C1.setRadius(circleRadius);
-        		D1.setRadius(circleRadius);   E1.setRadius(circleRadius);	F1.setRadius(circleRadius);
-        		
-        		A2.setRadius(circleRadius);	B2.setRadius(circleRadius);   C2.setRadius(circleRadius);
-        		D2.setRadius(circleRadius);   E2.setRadius(circleRadius);	F2.setRadius(circleRadius);
-        		
-        		A3.setRadius(circleRadius);	B3.setRadius(circleRadius);   C3.setRadius(circleRadius);
-        		D3.setRadius(circleRadius);   E3.setRadius(circleRadius);	F3.setRadius(circleRadius);
-        		
-        		A4.setRadius(circleRadius);	B4.setRadius(circleRadius);   C4.setRadius(circleRadius);
-        		D4.setRadius(circleRadius);   E4.setRadius(circleRadius);	F4.setRadius(circleRadius);
-        		
-        		A5.setRadius(circleRadius);	B5.setRadius(circleRadius);   C5.setRadius(circleRadius);
-        		D5.setRadius(circleRadius);   E5.setRadius(circleRadius);	F5.setRadius(circleRadius);
-        		
-        		A6.setRadius(circleRadius);	B6.setRadius(circleRadius);   C6.setRadius(circleRadius);
-        		D6.setRadius(circleRadius);   E6.setRadius(circleRadius);	F6.setRadius(circleRadius);
-        		
-        		A7.setRadius(circleRadius);	B7.setRadius(circleRadius);   C7.setRadius(circleRadius);
-        		D7.setRadius(circleRadius);   E7.setRadius(circleRadius);	F7.setRadius(circleRadius);
-        		
+        		for(GamePiece piece: col7GamePieces) {
+        			piece.setCenterX(column7.getCenter());
+        			piece.setRadius(circleRadius);
+        		}        		
             }
         });
         gameScreen.heightProperty().addListener(new ChangeListener<Number>() {
@@ -341,330 +338,105 @@ public class Connect_4 extends Application {
 		}
 			
         if (xMouse < column1.getBorder() && column1.getPieces() < 6) {
-        	System.out.println("column1");
-        	if (!boardPane.getChildren().contains(F1)) {
-        		F1.setFill(currentColor);
-        		backBoard[5][0] = currentChar;
-        		lastRow = 5;
-        		lastCol = 0;
-        		boardPane.getChildren().add(F1);
-        	}
-        	else if (!boardPane.getChildren().contains(E1)) {
-        		E1.setFill(currentColor);
-        		backBoard[4][0] = currentChar;
-        		lastRow = 4;
-        		lastCol = 0;
-        		boardPane.getChildren().add(E1);
-        	}
-        	else if (!boardPane.getChildren().contains(D1)) {
-        		D1.setFill(currentColor);
-        		backBoard[3][0] = currentChar;
-        		lastRow = 3;
-        		lastCol = 0;
-        		boardPane.getChildren().add(D1);
-        	}
-        	else if (!boardPane.getChildren().contains(C1)) {
-        		C1.setFill(currentColor);
-        		backBoard[2][0] = currentChar;
-        		lastRow = 2;
-        		lastCol = 0;
-        		boardPane.getChildren().add(C1);
-        	}
-        	else if (!boardPane.getChildren().contains(B1)) {
-        		B1.setFill(currentColor);
-        		backBoard[1][0] = currentChar;
-        		lastRow = 1;
-        		lastCol = 0;
-        		boardPane.getChildren().add(B1);
-        	}
-        	else if (!boardPane.getChildren().contains(A1)) {
-        		A1.setFill(currentColor);
-        		backBoard[0][0] = currentChar;
-        		lastRow = 0;
-        		lastCol = 0;
-        		boardPane.getChildren().add(A1);
+        	for(GamePiece piece: col1GamePieces) {
+            	if (!boardPane.getChildren().contains(piece)) {
+            		piece.setFill(currentColor);
+            		lastRow = piece.getRow() - 1;
+            		lastCol = piece.getCol() - 1;
+            		backBoard[lastRow][lastCol] = currentChar;
+            		boardPane.getChildren().add(piece);
+            		break;
+            	}
         	}
         	column1.addPiece();
         }
         
         else if (xMouse >= column1.getBorder() && xMouse < column2.getBorder() && column2.getPieces() < 6) {
         	System.out.println("column2");
-        	if (!boardPane.getChildren().contains(F2)) {
-        		F2.setFill(currentColor);
-        		backBoard[5][1] = currentChar;
-        		lastRow = 5;
-        		lastCol = 1;
-        		boardPane.getChildren().add(F2);
-        	}
-        	else if (!boardPane.getChildren().contains(E2)) {
-        		E2.setFill(currentColor);
-        		backBoard[4][1] = currentChar;
-        		lastRow = 4;
-        		lastCol = 1;
-        		boardPane.getChildren().add(E2);
-        	}
-        	else if (!boardPane.getChildren().contains(D2)) {
-        		D2.setFill(currentColor);
-        		backBoard[3][1] = currentChar;
-        		lastRow = 3;
-        		lastCol = 1;
-        		boardPane.getChildren().add(D2);
-        	}
-        	else if (!boardPane.getChildren().contains(C2)) {
-        		C2.setFill(currentColor);
-        		backBoard[2][1] = currentChar;
-        		lastRow = 2;
-        		lastCol = 1;
-        		boardPane.getChildren().add(C2);
-        	}
-        	else if (!boardPane.getChildren().contains(B2)) {
-        		B2.setFill(currentColor);
-        		backBoard[1][1] = currentChar;
-        		lastRow = 1;
-        		lastCol = 1;
-        		boardPane.getChildren().add(B2);
-        	}
-        	else if (!boardPane.getChildren().contains(A2)) {
-        		A2.setFill(currentColor);
-        		backBoard[0][1] = currentChar;
-        		lastRow = 0;
-        		lastCol = 1;
-        		boardPane.getChildren().add(A2);
+        	for(GamePiece piece: col2GamePieces) {
+            	if (!boardPane.getChildren().contains(piece)) {
+            		piece.setFill(currentColor);
+            		lastRow = piece.getRow() - 1;
+            		lastCol = piece.getCol() - 1;
+            		backBoard[lastRow][lastCol] = currentChar;
+            		boardPane.getChildren().add(piece);
+            		break;
+            	}
         	}
         	column2.addPiece();
         }
         
         else if (xMouse >= column2.getBorder() && xMouse < column3.getBorder() && column3.getPieces() < 6) {
         	System.out.println("column3");
-        	if (!boardPane.getChildren().contains(F3)) {
-        		F3.setFill(currentColor);
-        		backBoard[5][2] = currentChar;
-        		lastRow = 5;
-        		lastCol = 2;
-        		boardPane.getChildren().add(F3);
-        	}
-        	else if (!boardPane.getChildren().contains(E3)) {
-        		E3.setFill(currentColor);
-        		backBoard[4][2] = currentChar;
-        		lastRow = 4;
-        		lastCol = 2;
-        		boardPane.getChildren().add(E3);
-        	}
-        	else if (!boardPane.getChildren().contains(D3)) {
-        		D3.setFill(currentColor);
-        		backBoard[3][2] = currentChar;
-        		lastRow = 3;
-        		lastCol = 2;
-        		boardPane.getChildren().add(D3);
-        	}
-        	else if (!boardPane.getChildren().contains(C3)) {
-        		C3.setFill(currentColor);
-        		backBoard[2][2] = currentChar;
-        		lastRow = 2;
-        		lastCol = 2;
-        		boardPane.getChildren().add(C3);
-        	}
-        	else if (!boardPane.getChildren().contains(B3)) {
-        		B3.setFill(currentColor);
-        		backBoard[1][2] = currentChar;
-        		lastRow = 1;
-        		lastCol = 2;
-        		boardPane.getChildren().add(B3);
-        	}
-        	else if (!boardPane.getChildren().contains(A3)) {
-        		A3.setFill(currentColor);
-        		backBoard[0][2] = currentChar;
-        		lastRow = 0;
-        		lastCol = 2;
-        		boardPane.getChildren().add(A3);
+        	for(GamePiece piece: col3GamePieces) {
+            	if (!boardPane.getChildren().contains(piece)) {
+            		piece.setFill(currentColor);
+            		lastRow = piece.getRow() - 1;
+            		lastCol = piece.getCol() - 1;
+            		backBoard[lastRow][lastCol] = currentChar;
+            		boardPane.getChildren().add(piece);
+            		break;
+            	}
         	}
         	column3.addPiece();
         }
         
         else if (xMouse >= column3.getBorder() && xMouse < column4.getBorder() && column4.getPieces() < 6) {
         	System.out.println("column4");
-        	if (!boardPane.getChildren().contains(F4)) {
-        		F4.setFill(currentColor);
-        		backBoard[5][3] = currentChar;
-        		lastRow = 5;
-        		lastCol = 3;
-        		boardPane.getChildren().add(F4);
-        	}
-        	else if (!boardPane.getChildren().contains(E4)) {
-        		E4.setFill(currentColor);
-        		backBoard[4][3] = currentChar;
-        		lastRow = 4;
-        		lastCol = 3;
-        		boardPane.getChildren().add(E4);
-        	}
-        	else if (!boardPane.getChildren().contains(D4)) {
-        		D4.setFill(currentColor);
-        		backBoard[3][3] = currentChar;
-        		lastRow = 3;
-        		lastCol = 3;
-        		boardPane.getChildren().add(D4);
-        	}
-        	else if (!boardPane.getChildren().contains(C4)) {
-        		C4.setFill(currentColor);
-        		backBoard[2][3] = currentChar;
-        		lastRow = 2;
-        		lastCol = 3;
-        		boardPane.getChildren().add(C4);
-        	}
-        	else if (!boardPane.getChildren().contains(B4)) {
-        		B4.setFill(currentColor);
-        		backBoard[1][3] = currentChar;
-        		lastRow = 1;
-        		lastCol = 3;
-        		boardPane.getChildren().add(B4);
-        	}
-        	else if (!boardPane.getChildren().contains(A4)) {
-        		A4.setFill(currentColor);
-        		backBoard[0][3] = currentChar;
-        		lastRow = 0;
-        		lastCol = 3;
-        		boardPane.getChildren().add(A4);
+        	for(GamePiece piece: col4GamePieces) {
+            	if (!boardPane.getChildren().contains(piece)) {
+            		piece.setFill(currentColor);
+            		lastRow = piece.getRow() - 1;
+            		lastCol = piece.getCol() - 1;
+            		backBoard[lastRow][lastCol] = currentChar;
+            		boardPane.getChildren().add(piece);
+            		break;
+            	}
         	}
         	column4.addPiece();
         }
         
         else if (xMouse >= column4.getBorder() && xMouse < column5.getBorder() && column5.getPieces() < 6) {
         	System.out.println("column5");
-        	if (!boardPane.getChildren().contains(F5)) {
-        		F5.setFill(currentColor);
-        		backBoard[5][4] = currentChar;
-        		lastRow = 5;
-        		lastCol = 4;
-        		boardPane.getChildren().add(F5);
-        	}
-        	else if (!boardPane.getChildren().contains(E5)) {
-        		E5.setFill(currentColor);
-        		backBoard[4][4] = currentChar;
-        		lastRow = 4;
-        		lastCol = 4;
-        		boardPane.getChildren().add(E5);
-        	}
-        	else if (!boardPane.getChildren().contains(D5)) {
-        		D5.setFill(currentColor);
-        		backBoard[3][4] = currentChar;
-        		lastRow = 3;
-        		lastCol = 4;
-        		boardPane.getChildren().add(D5);
-        	}
-        	else if (!boardPane.getChildren().contains(C5)) {
-        		C5.setFill(currentColor);
-        		backBoard[2][4] = currentChar;
-        		lastRow = 2;
-        		lastCol = 4;
-        		boardPane.getChildren().add(C5);
-        	}
-        	else if (!boardPane.getChildren().contains(B5)) {
-        		B5.setFill(currentColor);
-        		backBoard[1][4] = currentChar;
-        		lastRow = 1;
-        		lastCol = 4;
-        		boardPane.getChildren().add(B5);
-        	}
-        	else if (!boardPane.getChildren().contains(A5)) {
-        		A5.setFill(currentColor);
-        		backBoard[0][4] = currentChar;
-        		lastRow = 0;
-        		lastCol = 4;
-        		boardPane.getChildren().add(A5);
+        	for(GamePiece piece: col5GamePieces) {
+            	if (!boardPane.getChildren().contains(piece)) {
+            		piece.setFill(currentColor);
+            		lastRow = piece.getRow() - 1;
+            		lastCol = piece.getCol() - 1;
+            		backBoard[lastRow][lastCol] = currentChar;
+            		boardPane.getChildren().add(piece);
+            		break;
+            	}
         	}
         	column5.addPiece();
         }
         
         else if (xMouse >= column5.getBorder() && xMouse < column6.getBorder() && column6.getPieces() < 6) {
         	System.out.println("column6");
-        	if (!boardPane.getChildren().contains(F6)) {
-        		F6.setFill(currentColor);
-        		backBoard[5][5] = currentChar;
-        		lastRow = 5;
-        		lastCol = 5;
-        		boardPane.getChildren().add(F6);
-        	}
-        	else if (!boardPane.getChildren().contains(E6)) {
-        		E6.setFill(currentColor);
-        		backBoard[4][5] = currentChar;
-        		lastRow = 4;
-        		lastCol = 5;
-        		boardPane.getChildren().add(E6);
-        	}
-        	else if (!boardPane.getChildren().contains(D6)) {
-        		D6.setFill(currentColor);
-        		backBoard[3][5] = currentChar;
-        		lastRow = 3;
-        		lastCol = 5;
-        		boardPane.getChildren().add(D6);
-        	}
-        	else if (!boardPane.getChildren().contains(C6)) {
-        		C6.setFill(currentColor);
-        		backBoard[2][5] = currentChar;
-        		lastRow = 2;
-        		lastCol = 5;
-        		boardPane.getChildren().add(C6);
-        	}
-        	else if (!boardPane.getChildren().contains(B6)) {
-        		B6.setFill(currentColor);
-        		backBoard[1][5] = currentChar;
-        		lastRow = 1;
-        		lastCol = 5;
-        		boardPane.getChildren().add(B6);
-        	}
-        	else if (!boardPane.getChildren().contains(A6)) {
-        		A6.setFill(currentColor);
-        		backBoard[0][5] = currentChar;
-        		lastRow = 0;
-        		lastCol = 5;
-        		boardPane.getChildren().add(A6);
+        	for(GamePiece piece: col6GamePieces) {
+            	if (!boardPane.getChildren().contains(piece)) {
+            		piece.setFill(currentColor);
+            		lastRow = piece.getRow() - 1;
+            		lastCol = piece.getCol() - 1;
+            		backBoard[lastRow][lastCol] = currentChar;
+            		boardPane.getChildren().add(piece);
+            		break;
+            	}
         	}
         	column6.addPiece();
         }
         
         else if (xMouse >= column6.getBorder() && xMouse < column7.getBorder() && column7.getPieces() < 6) {
         	System.out.println("column7");
-        	if (!boardPane.getChildren().contains(F7)) {
-        		F7.setFill(currentColor);
-        		backBoard[5][6] = currentChar;
-        		lastRow = 5;
-        		lastCol = 6;
-        		boardPane.getChildren().add(F7);
-        	}
-        	else if (!boardPane.getChildren().contains(E7)) {
-        		E7.setFill(currentColor);
-        		backBoard[4][6] = currentChar;
-        		lastRow = 4;
-        		lastCol = 6;
-        		boardPane.getChildren().add(E7);
-        	}
-        	else if (!boardPane.getChildren().contains(D7)) {
-        		D7.setFill(currentColor);
-        		backBoard[3][6] = currentChar;
-        		lastRow = 3;
-        		lastCol = 6;
-        		boardPane.getChildren().add(D7);
-        	}
-        	else if (!boardPane.getChildren().contains(C7)) {
-        		C7.setFill(currentColor);
-        		backBoard[2][6] = currentChar;
-        		lastRow = 2;
-        		lastCol = 6;
-        		boardPane.getChildren().add(C7);
-        	}
-        	else if (!boardPane.getChildren().contains(B7)) {
-        		B7.setFill(currentColor);
-        		backBoard[1][6] = currentChar;
-        		lastRow = 1;
-        		lastCol = 6;
-        		boardPane.getChildren().add(B7);
-        	}
-        	else if (!boardPane.getChildren().contains(A7)) {
-        		A7.setFill(currentColor);
-        		backBoard[0][6] = currentChar;
-        		lastRow = 0;
-        		lastCol = 6;
-        		boardPane.getChildren().add(A7);
+        	for(GamePiece piece: col7GamePieces) {
+            	if (!boardPane.getChildren().contains(piece)) {
+            		piece.setFill(currentColor);
+            		lastRow = piece.getRow() - 1;
+            		lastCol = piece.getCol() - 1;
+            		backBoard[lastRow][lastCol] = currentChar;
+            		boardPane.getChildren().add(piece);
+            		break;
+            	}
         	}
         	column7.addPiece();
         }
