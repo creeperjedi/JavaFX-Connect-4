@@ -1,11 +1,12 @@
 public class Column {
+	private GamePiece[] pieceArray;
 	private double rightBorder;
 	private double centerX;
-	private int placedPieces;
+	private int placedPieces = 0;
 	
 	//When numbering Columns start at 1, not 0
-	public Column() {
-		placedPieces = 0;
+	public Column(GamePiece[] pieceArray) {
+		this.pieceArray = pieceArray;
 	}
 	
 	//All previous columns must be of equal size for centerX to correct
@@ -19,6 +20,10 @@ public class Column {
 	
 	public void addPiece() {
 		placedPieces++;
+	}
+	
+	public GamePiece[] getPieceArray() {
+		return pieceArray;
 	}
 	
 	public double getBorder() {

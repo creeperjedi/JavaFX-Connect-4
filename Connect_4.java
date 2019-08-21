@@ -26,16 +26,7 @@ public class Connect_4 extends Application {
     
     Label topLabel = new Label("Welcome to JavaFX Connect-4");
     
-    ImageView boardOverlay;
-    
-    Column column1 = new Column();
-    Column column2 = new Column();
-    Column column3 = new Column();
-    Column column4 = new Column();
-    Column column5 = new Column();
-    Column column6 = new Column();
-    Column column7 = new Column();
-    
+    ImageView boardOverlay;    
     
     //Creates the Circles that will represent the game pieces
     /*Starts with A1 in the Top Left and F7 in the Bottom Right
@@ -88,13 +79,14 @@ public class Connect_4 extends Application {
     GamePiece F5 = new GamePiece('F', 5);
     GamePiece F6 = new GamePiece('F', 6);
     GamePiece F7 = new GamePiece('F', 7);
-    GamePiece[] col1GamePieces = new GamePiece[]{F1, E1, D1, C1, B1, A1};
-    GamePiece[] col2GamePieces = new GamePiece[]{F2, E2, D2, C2, B2, A2};
-    GamePiece[] col3GamePieces = new GamePiece[]{F3, E3, D3, C3, B3, A3};
-    GamePiece[] col4GamePieces = new GamePiece[]{F4, E4, D4, C4, B4, A4};
-    GamePiece[] col5GamePieces = new GamePiece[]{F5, E5, D5, C5, B5, A5};
-    GamePiece[] col6GamePieces = new GamePiece[]{F6, E6, D6, C6, B6, A6};
-    GamePiece[] col7GamePieces = new GamePiece[]{F7, E7, D7, C7, B7, A7};
+    Column column1 = new Column(new GamePiece[]{F1, E1, D1, C1, B1, A1});
+    Column column2 = new Column(new GamePiece[]{F2, E2, D2, C2, B2, A2});
+    Column column3 = new Column(new GamePiece[]{F3, E3, D3, C3, B3, A3});
+    Column column4 = new Column(new GamePiece[]{F4, E4, D4, C4, B4, A4});
+    Column column5 = new Column(new GamePiece[]{F5, E5, D5, C5, B5, A5});
+    Column column6 = new Column(new GamePiece[]{F6, E6, D6, C6, B6, A6});
+    Column column7 = new Column(new GamePiece[]{F7, E7, D7, C7, B7, A7});
+    Column[] columnArray = new Column[] {column1, column2, column3, column4, column5, column6, column7};
     
     AudioClip gameEnd = new AudioClip(this.getClass().getResource("/res/gameOver.wav").toString());
     AudioClip backgroundMusic = new AudioClip(this.getClass().getResource("/res/backgroundMusic.mp3").toString());
@@ -241,41 +233,13 @@ public class Connect_4 extends Application {
         		
         		double circleRadius = column1.getBorder() / 2;
         		
-        		//Sets the CenterX and Radius for each Circle
-        		for(GamePiece piece: col1GamePieces) {
-        			piece.setCenterX(column1.getCenter());
-        			piece.setRadius(circleRadius);
-        		}
-        		
-        		for(GamePiece piece: col2GamePieces) {
-        			piece.setCenterX(column2.getCenter());
-        			piece.setRadius(circleRadius);
-        		}
-        		
-        		for(GamePiece piece: col3GamePieces) {
-        			piece.setCenterX(column3.getCenter());
-        			piece.setRadius(circleRadius);
-        		}
-        		
-        		for(GamePiece piece: col4GamePieces) {
-        			piece.setCenterX(column4.getCenter());
-        			piece.setRadius(circleRadius);
-        		}
-        		
-        		for(GamePiece piece: col5GamePieces) {
-        			piece.setCenterX(column5.getCenter());
-        			piece.setRadius(circleRadius);
-        		}
-        		
-        		for(GamePiece piece: col6GamePieces) {
-        			piece.setCenterX(column6.getCenter());
-        			piece.setRadius(circleRadius);
-        		}
-        		
-        		for(GamePiece piece: col7GamePieces) {
-        			piece.setCenterX(column7.getCenter());
-        			piece.setRadius(circleRadius);
-        		}        		
+        		//Sets the CenterX and Radius for each Circle in each Column
+        		for (Column column: columnArray) {
+        			for (GamePiece piece: column.getPieceArray()) {
+            			piece.setCenterX(column.getCenter());
+            			piece.setRadius(circleRadius);
+        			}
+        		}    		
             }
         });
         gameScreen.heightProperty().addListener(new ChangeListener<Number>() {
@@ -283,29 +247,21 @@ public class Connect_4 extends Application {
                 System.out.println("Height: " + newSceneHeight);
                 boardOverlay.setFitHeight((double) newSceneHeight);
                 resizedHeight = (double) newSceneHeight;
-                A1.setCenterY(resizedHeight / 6 / 2);	A2.setCenterY(resizedHeight / 6 / 2);	A3.setCenterY(resizedHeight / 6 / 2);
-                A4.setCenterY(resizedHeight / 6 / 2);	A5.setCenterY(resizedHeight / 6 / 2);
-                A6.setCenterY(resizedHeight / 6 / 2);   A7.setCenterY(resizedHeight / 6 / 2);
                 
-                B1.setCenterY(resizedHeight / 6 / 2 * 3);	B2.setCenterY(resizedHeight / 6 / 2 * 3);	B3.setCenterY(resizedHeight / 6 / 2 * 3);
-                B4.setCenterY(resizedHeight / 6 / 2 * 3);	B5.setCenterY(resizedHeight / 6 / 2 * 3);
-                B6.setCenterY(resizedHeight / 6 / 2 * 3);   B7.setCenterY(resizedHeight / 6 / 2 * 3);
-                
-                C1.setCenterY(resizedHeight / 6 / 2 * 5);	C2.setCenterY(resizedHeight / 6 / 2 * 5);	C3.setCenterY(resizedHeight / 6 / 2 * 5);
-                C4.setCenterY(resizedHeight / 6 / 2 * 5);	C5.setCenterY(resizedHeight / 6 / 2 * 5);
-                C6.setCenterY(resizedHeight / 6 / 2 * 5);   C7.setCenterY(resizedHeight / 6 / 2 * 5);
-                
-                D1.setCenterY(resizedHeight / 6 / 2 * 7);	D2.setCenterY(resizedHeight / 6 / 2 * 7);	D3.setCenterY(resizedHeight / 6 / 2 * 7);
-                D4.setCenterY(resizedHeight / 6 / 2 * 7);	D5.setCenterY(resizedHeight / 6 / 2 * 7);
-                D6.setCenterY(resizedHeight / 6 / 2 * 7);   D7.setCenterY(resizedHeight / 6 / 2 * 7);
-                
-                E1.setCenterY(resizedHeight / 6 / 2 * 9);	E2.setCenterY(resizedHeight / 6 / 2 * 9);	E3.setCenterY(resizedHeight / 6 / 2 * 9);
-                E4.setCenterY(resizedHeight / 6 / 2 * 9);	E5.setCenterY(resizedHeight / 6 / 2 * 9);
-                E6.setCenterY(resizedHeight / 6 / 2 * 9);   E7.setCenterY(resizedHeight / 6 / 2 * 9);
-                
-                F1.setCenterY(resizedHeight / 6 / 2 * 11);	F2.setCenterY(resizedHeight / 6 / 2 * 11);	F3.setCenterY(resizedHeight / 6 / 2 * 11);
-                F4.setCenterY(resizedHeight / 6 / 2 * 11);	F5.setCenterY(resizedHeight / 6 / 2 * 11);
-                F6.setCenterY(resizedHeight / 6 / 2 * 11);   F7.setCenterY(resizedHeight / 6 / 2 * 11);
+                /*Sets the y coordinate, centerY, for each GamePiece in each Column [this is calculated by 
+                 *dividing the current height by 6 (for each row) then by 2 (to get the center of that row)
+                 *the by multiplying by the transform variable which changes the centerY so that the GamePiece
+                 *is in its appropriate row
+                 */
+                int transform = 11;
+        		for (Column column: columnArray) {
+        	        for (GamePiece piece: column.getPieceArray()) {
+        	        		System.out.println(piece.name);
+        	            	piece.setCenterY(resizedHeight / 6 / 2 * transform);
+        	            	transform -= 2;
+        	        }
+        	        transform = 11;
+        		}                
             }
         });
         
@@ -345,111 +301,33 @@ public class Connect_4 extends Application {
 			currentColor = Color.RED;
 			currentChar = 'R';
 		}
-			
-        if (xMouse < column1.getBorder() && column1.getPieces() < 6) {
-        	for(GamePiece piece: col1GamePieces) {
-            	if (!boardPane.getChildren().contains(piece)) {
-            		piece.setFill(currentColor);
-            		lastRow = piece.getRow() - 1;
-            		lastCol = piece.getCol() - 1;
-            		backBoard[lastRow][lastCol] = currentChar;
-            		boardPane.getChildren().add(piece);
-            		break;
-            	}
-        	}
-        	column1.addPiece();
-        }
-        
-        else if (xMouse >= column1.getBorder() && xMouse < column2.getBorder() && column2.getPieces() < 6) {
-        	System.out.println("column2");
-        	for(GamePiece piece: col2GamePieces) {
-            	if (!boardPane.getChildren().contains(piece)) {
-            		piece.setFill(currentColor);
-            		lastRow = piece.getRow() - 1;
-            		lastCol = piece.getCol() - 1;
-            		backBoard[lastRow][lastCol] = currentChar;
-            		boardPane.getChildren().add(piece);
-            		break;
-            	}
-        	}
-        	column2.addPiece();
-        }
-        
-        else if (xMouse >= column2.getBorder() && xMouse < column3.getBorder() && column3.getPieces() < 6) {
-        	System.out.println("column3");
-        	for(GamePiece piece: col3GamePieces) {
-            	if (!boardPane.getChildren().contains(piece)) {
-            		piece.setFill(currentColor);
-            		lastRow = piece.getRow() - 1;
-            		lastCol = piece.getCol() - 1;
-            		backBoard[lastRow][lastCol] = currentChar;
-            		boardPane.getChildren().add(piece);
-            		break;
-            	}
-        	}
-        	column3.addPiece();
-        }
-        
-        else if (xMouse >= column3.getBorder() && xMouse < column4.getBorder() && column4.getPieces() < 6) {
-        	System.out.println("column4");
-        	for(GamePiece piece: col4GamePieces) {
-            	if (!boardPane.getChildren().contains(piece)) {
-            		piece.setFill(currentColor);
-            		lastRow = piece.getRow() - 1;
-            		lastCol = piece.getCol() - 1;
-            		backBoard[lastRow][lastCol] = currentChar;
-            		boardPane.getChildren().add(piece);
-            		break;
-            	}
-        	}
-        	column4.addPiece();
-        }
-        
-        else if (xMouse >= column4.getBorder() && xMouse < column5.getBorder() && column5.getPieces() < 6) {
-        	System.out.println("column5");
-        	for(GamePiece piece: col5GamePieces) {
-            	if (!boardPane.getChildren().contains(piece)) {
-            		piece.setFill(currentColor);
-            		lastRow = piece.getRow() - 1;
-            		lastCol = piece.getCol() - 1;
-            		backBoard[lastRow][lastCol] = currentChar;
-            		boardPane.getChildren().add(piece);
-            		break;
-            	}
-        	}
-        	column5.addPiece();
-        }
-        
-        else if (xMouse >= column5.getBorder() && xMouse < column6.getBorder() && column6.getPieces() < 6) {
-        	System.out.println("column6");
-        	for(GamePiece piece: col6GamePieces) {
-            	if (!boardPane.getChildren().contains(piece)) {
-            		piece.setFill(currentColor);
-            		lastRow = piece.getRow() - 1;
-            		lastCol = piece.getCol() - 1;
-            		backBoard[lastRow][lastCol] = currentChar;
-            		boardPane.getChildren().add(piece);
-            		break;
-            	}
-        	}
-        	column6.addPiece();
-        }
-        
-        else if (xMouse >= column6.getBorder() && xMouse < column7.getBorder() && column7.getPieces() < 6) {
-        	System.out.println("column7");
-        	for(GamePiece piece: col7GamePieces) {
-            	if (!boardPane.getChildren().contains(piece)) {
-            		piece.setFill(currentColor);
-            		lastRow = piece.getRow() - 1;
-            		lastCol = piece.getCol() - 1;
-            		backBoard[lastRow][lastCol] = currentChar;
-            		boardPane.getChildren().add(piece);
-            		break;
-            	}
-        	}
-        	column7.addPiece();
-        }
-        
+		
+		/* Checks if the x coordinate of the last click, xMouse, is inside of first column [this is tested by checking if
+		 * xMouse is less than (to the left of) the right border of the column (retrieved by using .getBorder)]
+		 * 
+		 * If it is then it will check each piece starting from the bottom until it finds one that has not been placed
+		 * 
+		 * If the click is not within the the first column then it will check again with the next
+		 * column and so on until there are no columns left
+		*/
+		
+		for (Column column: columnArray) {
+			if (xMouse <= column.getBorder() && column.getPieces() < 6) {
+	        	for (GamePiece piece: column.getPieceArray()) {
+	            	if (!boardPane.getChildren().contains(piece)) {
+	            		piece.setFill(currentColor);
+	            		lastRow = piece.getRow() - 1;
+	            		lastCol = piece.getCol() - 1;
+	            		backBoard[lastRow][lastCol] = currentChar;
+	            		boardPane.getChildren().add(piece);
+	            		break;
+	            	}
+	        	}
+	        	column.addPiece();
+	        	break;
+			}
+		}
+		
         piecesOnBoard = column1.getPieces() + column2.getPieces() + column3.getPieces()
         		+ column4.getPieces() + column5.getPieces() + column6.getPieces() + column7.getPieces();
         System.out.println("Number of pieces on the board: " + piecesOnBoard);
