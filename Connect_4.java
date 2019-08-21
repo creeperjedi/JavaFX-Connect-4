@@ -1,6 +1,8 @@
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.concurrent.Service;
+import javafx.concurrent.Task;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -113,6 +115,8 @@ public class Connect_4 extends Application {
     char[][] backBoard = new char[6][7];
     boolean againstComputer = false;
     boolean playerHasWon = false;
+    boolean prepareRestart = false;
+    boolean restartGame = false;
 
     public static void main(String[] args) {
         launch(args);
@@ -138,12 +142,16 @@ public class Connect_4 extends Application {
     	    xMouse=(int) e.getX();
     	    yMouse=(int) e.getY();
     	    System.out.println(xMouse+","+yMouse);//these co-ords are relative to the component
-    	    tempRow = lastRow;
-    	    tempCol = lastCol;
-    	    humanInputMethod();
-    	    if (againstComputer) {
-    			if (tempRow != lastRow || tempCol != lastCol)
-    				computerInputMethod();
+    	    if (prepareRestart)
+    	    	restartGameMethod();
+    	    else {
+	    	    tempRow = lastRow;
+	    	    tempCol = lastCol;
+	    	    humanInputMethod();
+	    	    if (againstComputer) {
+	    			if (tempRow != lastRow || tempCol != lastCol)
+	    				computerInputMethod();
+	    	    }
     	    }
         });
         
@@ -447,7 +455,8 @@ public class Connect_4 extends Application {
         System.out.println("Number of pieces on the board: " + piecesOnBoard);
     	boardPane.getChildren().remove(boardOverlay);
     	boardPane.getChildren().add(boardOverlay);
-    	checkWinMethod();
+    	service.reset();
+    	service.start();
 	}
 	
 	public void computerInputMethod() {
@@ -466,7 +475,30 @@ public class Connect_4 extends Application {
 		}
 		
 	}
-
+	
+    Service<Object> service = new Service<Object>() {
+	    @Override
+	    protected Task<Object> createTask() {
+	        return new Task<Object>() {
+	            @Override
+	            protected Void call() {
+	    			checkWinMethod();
+	    			if (prepareRestart == true) {
+	    				try {
+							Thread.sleep(100);
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+	    				backgroundMusic.stop();
+	    				gameEnd.play();
+	    			}
+					return null;
+	            }
+	        };
+	    }	
+    };	
+	
 	public void checkWinMethod() {
 		if (piecesOnBoard == 42) 
 			winner = "It's a Tie!";
@@ -555,15 +587,16 @@ public class Connect_4 extends Application {
 					&& backBoard[lastRow-2][lastCol-2] == backBoard[lastRow][lastCol]
 					&& backBoard[lastRow-1][lastCol-1] == backBoard[lastRow][lastCol])
 				playerHasWon = true;
-		
 		if (playerHasWon)
-			restartGameMethod();
-		
+			prepareRestart = true;
 	}
 	
 	public void restartGameMethod() {
-		backgroundMusic.stop();
-		gameEnd.play();
+		if (!prepareRestart) {
+			backgroundMusic.stop();
+			gameEnd.play();
+		}
+		
 		column1.resetPieces(); column2.resetPieces(); column3.resetPieces(); column4.resetPieces();
 		column5.resetPieces(); column6.resetPieces(); column7.resetPieces(); 
 		
@@ -581,5 +614,7 @@ public class Connect_4 extends Application {
 		completedGames++;
 		againstComputer = false;
 		playerHasWon = false;
+		prepareRestart = false;
+		restartGame = false;
 	}
 }
