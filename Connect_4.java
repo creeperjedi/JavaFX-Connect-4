@@ -146,50 +146,12 @@ public class Connect_4 extends Application {
         //Checks for mouse click on the button and starts the game
         Button startGameHuman = new Button("Another human");
         startGameHuman.setOnAction(e -> {
-        	//Saves the dimensions of the mainMenu window and sets the Scene to gameScreen
-            windowHeight = window.getHeight();
-            windowWidth = window.getWidth();
-            window.setScene(gameScreen);
-            
-            /* Applies the saved dimensions to the new window to keep the sizes consistent
-             * Adds or subtracts to trigger the Listener so that the boardOverlay can be properly sized
-             * Alternates between adding or subtracting every round to prevent compounding changes in the size of the board
-             */
-            if (completedGames % 2 == 0) {
-	            window.setWidth(windowWidth + 1);
-	            window.setHeight(windowHeight + 1);
-            }
-            else {
-                window.setWidth(windowWidth - 1);
-                window.setHeight(windowHeight - 1);
-            }
-            
-            backgroundMusic.play();
-            
-        	//window.setFullScreen(true);
-        	window.centerOnScreen();
+        	startGameMethod();
         	});
         Button startGameComputer = new Button("The computer");
         startGameComputer.setOnAction(e -> {
-            windowHeight = window.getHeight();
-            windowWidth = window.getWidth();
-            window.setScene(gameScreen);
-            
-            if (completedGames % 2 == 0) {
-	            window.setWidth(windowWidth + 1);
-	            window.setHeight(windowHeight + 1);
-            }
-            else {
-                window.setWidth(windowWidth - 1);
-                window.setHeight(windowHeight - 1);
-            }
-            
-            againstComputer = true;
-            
-            backgroundMusic.play();
-            
-        	//window.setFullScreen(true);
-        	window.centerOnScreen();
+        	againstComputer = true;
+        	startGameMethod();
         	});
         
         Button viewCredits = new Button("View credits");
@@ -239,10 +201,10 @@ public class Connect_4 extends Application {
                 System.out.println("Height: " + newSceneHeight);
                 resizedHeight = (double) newSceneHeight;
                 
-                /*Sets the y coordinate, centerY, for each GamePiece in each Column [this is calculated by 
-                 *dividing the current height by 6 (for each row) then by 2 (to get the center of that row)
-                 *the by multiplying by the transform variable which changes the centerY so that the GamePiece
-                 *is in its appropriate row
+                /* Sets the y coordinate, centerY, for each GamePiece in each Column [this is calculated by 
+                 * dividing the current height by 6 (for each row) then by 2 (to get the center of that row)
+                 * the by multiplying by the transform variable which changes the centerY so that the GamePiece
+                 * is in its appropriate row
                  */
                 int transform = 11;
         		for (Column column: columnArray) {
@@ -290,6 +252,30 @@ public class Connect_4 extends Application {
         window.show();
         window.centerOnScreen();
     }
+    
+    public void startGameMethod() {
+    	//Saves the dimensions of the mainMenu window and sets the Scene to gameScreen
+        windowHeight = window.getHeight();
+        windowWidth = window.getWidth();
+        window.setScene(gameScreen);
+        
+        /* Applies the saved dimensions to the new window to keep the sizes consistent
+         * Adds or subtracts to trigger the Listener so that the boardOverlay can be properly sized
+         * Alternates between adding or subtracting every round to prevent compounding changes in the size of the board
+         */
+        if (completedGames % 2 == 0) {
+            window.setWidth(windowWidth + 1);
+            window.setHeight(windowHeight + 1);
+        }
+        else {
+            window.setWidth(windowWidth - 1);
+            window.setHeight(windowHeight - 1);
+        }
+        
+        backgroundMusic.play();
+        
+    	window.centerOnScreen();
+    }
 
     public void humanInputMethod() {
 		Color currentColor;
@@ -310,8 +296,7 @@ public class Connect_4 extends Application {
 		 * 
 		 * If the click is not within the the first column then it will check again with the next
 		 * column and so on until there are no columns left
-		*/
-		
+		 */
 		for (Column column: columnArray) {
 			if (xMouse <= column.getBorder() && column.getPieces() < 6) {
 	        	for (GamePiece piece: column.getPieceArray()) {
@@ -352,6 +337,9 @@ public class Connect_4 extends Application {
 		
 	}
 	
+	/* Runs the checkWinMethod on a different thread to allow the winning move to be displayed without immediately
+	 * returning to the main menu
+	 */
     Service<Object> service = new Service<Object>() {
 	    @Override
 	    protected Task<Object> createTask() {
@@ -363,7 +351,6 @@ public class Connect_4 extends Application {
 	    				try {
 							Thread.sleep(100);
 						} catch (InterruptedException e) {
-							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
 	    				backgroundMusic.stop();
