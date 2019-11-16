@@ -8,8 +8,9 @@ import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.media.AudioClip;
@@ -24,9 +25,7 @@ public class Connect_4 extends Application {
     
     Pane boardPane = new Pane();
     
-    Label topLabel = new Label("Welcome to JavaFX Connect-4");
-    
-    ImageView boardOverlay;    
+    Label topLabel = new Label("Welcome to JavaFX Connect-4"); 
     
     //Creates the Circles that will represent the game pieces
     /*Starts with A1 in the Top Left and F7 in the Bottom Right
@@ -117,17 +116,11 @@ public class Connect_4 extends Application {
     @Override
     public void start(Stage primaryStage) {
     	window = primaryStage;
-    	//Assigns the boardPane to the gameScreen Scene
+    	//Assigns the boardPane Pane to the gameScreen Scene
         gameScreen = new Scene(boardPane);
-        
+        boardPane.setBackground(new Background(new BackgroundFill(Color.rgb(30, 143, 255), CornerRadii.EMPTY, Insets.EMPTY)));
         windowHeight = window.getHeight();
         windowWidth = window.getWidth();
-        
-        Image boardOverlayPNG = new Image("/res/boardOverlay.png");
-        boardOverlay = new ImageView(boardOverlayPNG);
-        boardOverlay.setFitWidth(windowWidth);
-        boardOverlay.setFitHeight(windowHeight);
-        boardPane.getChildren().add(boardOverlay);
         
 		//Triggers the humanInputMethod() and prints the X and Y coordinate for every mouse click on the board
         boardPane.setOnMouseClicked(e -> {
@@ -210,7 +203,6 @@ public class Connect_4 extends Application {
         gameScreen.widthProperty().addListener(new ChangeListener<Number>() {
             @Override public void changed(ObservableValue<? extends Number> observableValue, Number oldSceneWidth, Number newSceneWidth) {
                 System.out.println("Width: " + newSceneWidth);
-                boardOverlay.setFitWidth((double) newSceneWidth);
                 resizedWidth = (double) newSceneWidth;
                 
                 //Sets the rightBorder for each Column
@@ -245,7 +237,6 @@ public class Connect_4 extends Application {
         gameScreen.heightProperty().addListener(new ChangeListener<Number>() {
             @Override public void changed(ObservableValue<? extends Number> observableValue, Number oldSceneHeight, Number newSceneHeight) {
                 System.out.println("Height: " + newSceneHeight);
-                boardOverlay.setFitHeight((double) newSceneHeight);
                 resizedHeight = (double) newSceneHeight;
                 
                 /*Sets the y coordinate, centerY, for each GamePiece in each Column [this is calculated by 
@@ -264,6 +255,16 @@ public class Connect_4 extends Application {
         		}                
             }
         });
+        
+        //Adds every piece to the game board (boardPane) and sets their color to white to represent empty spaces in the board
+		for (Column column: columnArray) {
+	        for (GamePiece piece: column.getPieceArray()) {
+	        	piece.setScaleX(0.80);
+	        	piece.setScaleY(0.80);
+	        	piece.setFill(Color.WHITE);
+	        	boardPane.getChildren().add(piece);
+	        }
+	    }
         
         GridPane grid = new GridPane();
         grid.setPadding(new Insets(10, 10, 10, 10));
@@ -314,12 +315,11 @@ public class Connect_4 extends Application {
 		for (Column column: columnArray) {
 			if (xMouse <= column.getBorder() && column.getPieces() < 6) {
 	        	for (GamePiece piece: column.getPieceArray()) {
-	            	if (!boardPane.getChildren().contains(piece)) {
+	            	if (piece.getFill().equals(Color.WHITE)) {
 	            		piece.setFill(currentColor);
 	            		lastRow = piece.getRow() - 1;
 	            		lastCol = piece.getCol() - 1;
 	            		backBoard[lastRow][lastCol] = currentChar;
-	            		boardPane.getChildren().add(piece);
 	            		break;
 	            	}
 	        	}
@@ -331,8 +331,6 @@ public class Connect_4 extends Application {
         piecesOnBoard = column1.getPieces() + column2.getPieces() + column3.getPieces()
         		+ column4.getPieces() + column5.getPieces() + column6.getPieces() + column7.getPieces();
         System.out.println("Number of pieces on the board: " + piecesOnBoard);
-    	boardPane.getChildren().remove(boardOverlay);
-    	boardPane.getChildren().add(boardOverlay);
     	service.reset();
     	service.start();
 	}
@@ -485,8 +483,11 @@ public class Connect_4 extends Application {
 		window.setScene(mainMenu);
 		window.centerOnScreen();
 		
-		boardPane.getChildren().clear();
-		boardPane.getChildren().add(boardOverlay);
+		for (Column column: columnArray) {
+	        for (GamePiece piece: column.getPieceArray()) {
+	        	piece.setFill(Color.WHITE);
+	        }
+	    }
 		backBoard = new char[6][7];
 		
 		completedGames++;
