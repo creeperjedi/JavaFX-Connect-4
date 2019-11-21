@@ -119,7 +119,7 @@ public class Connect_4 extends Application {
      */
     char[][] backBoard = new char[6][7];
     boolean againstComputer = false;
-    boolean placementChosen = true;
+    boolean placementChosen = false;
     boolean playerHasWon = false;
     boolean prepareRestart = false;
     boolean restartGame = false;
