@@ -1,13 +1,13 @@
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.concurrent.Service;
-import javafx.concurrent.Task;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
@@ -24,6 +24,10 @@ public class Connect_4 extends Application {
     Scene mainMenu, gameScreen;
     
     Pane boardPane = new Pane();
+    
+    ToggleGroup difficulty;
+    RadioButton randomDifficulty;
+    RadioButton basicDifficulty;
     
     Label topLabel = new Label("Welcome to JavaFX Connect-4"); 
     
@@ -95,16 +99,27 @@ public class Connect_4 extends Application {
 	double windowWidth;
 	double resizedWidth;
 	double resizedHeight;
-    int lastRow;
-    int lastCol;
-    int tempRow;
-    int tempCol;
+    int recentRow;
+    int recentCol;
+    int previousRow;
+    int previousCol;
     int xMouse;
     int yMouse;
     int piecesOnBoard = 0;
     int completedGames = 0;
+    //Creates the 2d-array that will be used to check for game wins
+    /* Organized like a traditional co-ordinate plane with an inverted y-axis
+     * 0, 1, 2, 3, 4, 5, 6 < [][Columns] 
+     * 1 
+     * 2 
+     * 3 
+     * 4 
+     * 5
+     * ^ [Rows][] 
+     */
     char[][] backBoard = new char[6][7];
     boolean againstComputer = false;
+    boolean placementChosen = true;
     boolean playerHasWon = false;
     boolean prepareRestart = false;
     boolean restartGame = false;
@@ -119,6 +134,7 @@ public class Connect_4 extends Application {
     	//Assigns the boardPane Pane to the gameScreen Scene
         gameScreen = new Scene(boardPane);
         boardPane.setBackground(new Background(new BackgroundFill(Color.rgb(30, 143, 255), CornerRadii.EMPTY, Insets.EMPTY)));
+        
         windowHeight = window.getHeight();
         windowWidth = window.getWidth();
         
@@ -130,18 +146,23 @@ public class Connect_4 extends Application {
     	    if (prepareRestart)
     	    	restartGameMethod();
     	    else {
-	    	    tempRow = lastRow;
-	    	    tempCol = lastCol;
+	    	    previousRow = recentRow;
+	    	    previousCol = recentCol;
 	    	    humanInputMethod();
-	    	    if (againstComputer) {
-	    			if (tempRow != lastRow || tempCol != lastCol)
-	    				computerInputMethod();
+	    	    checkWinMethod();
+	    	    if (prepareRestart == false && againstComputer) {
+	    			if (previousRow != recentRow || previousCol != recentCol) {
+	    				computerInputMethod();	
+	    	    	    checkWinMethod();
+	    			}
 	    	    }
     	    }
         });
         
     	//**Main Menu**
         Label pickOponent = new Label("Pick your opponent");
+        
+        Label pickDifficulty = new Label("Computer difficulty:");
         
         //Checks for mouse click on the button and starts the game
         Button startGameHuman = new Button("Another human");
@@ -153,6 +174,13 @@ public class Connect_4 extends Application {
         	againstComputer = true;
         	startGameMethod();
         	});
+        
+        difficulty = new ToggleGroup();
+        randomDifficulty = new RadioButton("Random");
+        randomDifficulty.setToggleGroup(difficulty);
+        randomDifficulty.setSelected(true);
+        basicDifficulty = new RadioButton("Basic");
+        basicDifficulty.setToggleGroup(difficulty);
         
         Button viewCredits = new Button("View credits");
         viewCredits.setOnAction(e -> {
@@ -240,10 +268,15 @@ public class Connect_4 extends Application {
         
         GridPane.setConstraints(startGameHuman, 1, 7);
         GridPane.setConstraints(startGameComputer, 3, 7);
-        GridPane.setConstraints(viewCredits, 1, 9, 3, 1);
+        GridPane.setHalignment(pickDifficulty, HPos.RIGHT);
+        GridPane.setConstraints(pickDifficulty, 1, 9);
+        GridPane.setConstraints(randomDifficulty, 3, 9);
+        GridPane.setConstraints(basicDifficulty, 3, 11);
+        GridPane.setConstraints(viewCredits, 1, 13, 3, 1);
         GridPane.setFillWidth(viewCredits, true);
         viewCredits.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
-        grid.getChildren().addAll(topLabel, pickOponent, startGameHuman, startGameComputer, viewCredits);
+        grid.getChildren().addAll(topLabel, pickOponent, startGameHuman, startGameComputer,
+        		pickDifficulty, randomDifficulty, basicDifficulty, viewCredits);
         	
         //Main Menu Display
     	window.setTitle("JavaFX Connect 4");
@@ -302,9 +335,9 @@ public class Connect_4 extends Application {
 	        	for (GamePiece piece: column.getPieceArray()) {
 	            	if (piece.getFill().equals(Color.WHITE)) {
 	            		piece.setFill(currentColor);
-	            		lastRow = piece.getRow() - 1;
-	            		lastCol = piece.getCol() - 1;
-	            		backBoard[lastRow][lastCol] = currentChar;
+	            		recentRow = piece.getRow() - 1;
+	            		recentCol = piece.getCol() - 1;
+	            		backBoard[recentRow][recentCol] = currentChar;
 	            		break;
 	            	}
 	        	}
@@ -316,142 +349,169 @@ public class Connect_4 extends Application {
         piecesOnBoard = column1.getPieces() + column2.getPieces() + column3.getPieces()
         		+ column4.getPieces() + column5.getPieces() + column6.getPieces() + column7.getPieces();
         System.out.println("Number of pieces on the board: " + piecesOnBoard);
-    	service.reset();
-    	service.start();
 	}
 	
 	public void computerInputMethod() {
 		Random rand = new Random();
 		while (true) {
-			xMouse = rand.nextInt((int) column7.getBorder());
-    	    tempRow = lastRow;
-    	    tempCol = lastCol;
+			if (basicDifficulty.isSelected() == true) {
+				placementChosen = false;
+				System.out.println("Checks have begun");
+				//Checks if the last piece's color is equal to the ...
+				//2 to the Left
+				if (recentCol-2 >= 0)
+					if (backBoard[recentRow][recentCol-2] == backBoard[recentRow][recentCol]
+							&& backBoard[recentRow][recentCol-1] == backBoard[recentRow][recentCol]) {
+						//Tries to place a piece to the Left of the row of 3: ▪️ ⚪ ⚪ ⚫ 
+						backBoardCalculator(-3);
+						//Tries to place a piece to the Right of the row of 3:   ⚪ ⚪ ⚫ ▪️ 
+						if (placementChosen == false)
+							backBoardCalculator(+1);
+					}
+				//2 to the Right
+				if (recentCol+2 <= 6 && placementChosen == false)
+					if (backBoard[recentRow][recentCol+1] == backBoard[recentRow][recentCol]
+							&& backBoard[recentRow][recentCol+2] == backBoard[recentRow][recentCol]) {
+						//Tries to place a piece to the Right of the row of 3:   ⚫ ⚪ ⚪ ▪️ 
+						backBoardCalculator(+3);
+						//Tries to place a piece to the Left of the row of 3: ▪️ ⚫ ⚪ ⚪ 
+						if (placementChosen == false)
+							backBoardCalculator(-1);
+					}
+				//2 Down
+				if (recentRow+2 <=5 && placementChosen == false)
+					if (backBoard[recentRow+1][recentCol] == backBoard[recentRow][recentCol]
+							&& backBoard[recentRow+2][recentCol] == backBoard[recentRow][recentCol]) {
+						placementChosen = true;
+					}
+				System.out.println("Choice made: " + placementChosen);
+			}
+			if (!placementChosen) {
+				xMouse = rand.nextInt((int) column7.getBorder());
+			}
+    	    previousRow = recentRow;
+    	    previousCol = recentCol;
     	    humanInputMethod();
-    		if (tempRow != lastRow || tempCol != lastCol) {
+    		if (previousRow != recentRow || previousCol != recentCol) {
     				break;
     		}
 			//Breaks if there is one spot left
 			else if (piecesOnBoard == 42)
 				break;
 		}
-		
+	}
+
+	public void backBoardCalculator(int distance) {
+		//Checks if the column being tested is valid
+		if (recentCol+distance >= 0 && recentCol+distance <= 6)
+			//Checks if the space being tested is empty
+			if (backBoard[recentRow][recentCol+distance] == 0)
+				//Checks if the row being tested is the bottom-most row
+				if (recentRow == 5) {
+					xMouse = (int) columnArray[recentCol+distance].getCenter();
+					placementChosen = true;
+				}
+				//Checks if the space below the space being tested is occupied
+				//(to ensure that the piece will land where it is placed)
+				else if (backBoard[recentRow+1][recentCol+distance] != 0) {
+						xMouse = (int) columnArray[recentCol+distance].getCenter();
+						placementChosen = true;
+				}
 	}
 	
-	/* Runs the checkWinMethod on a different thread to allow the winning move to be displayed without immediately
-	 * returning to the main menu
-	 */
-    Service<Object> service = new Service<Object>() {
-	    @Override
-	    protected Task<Object> createTask() {
-	        return new Task<Object>() {
-	            @Override
-	            protected Void call() {
-	    			checkWinMethod();
-	    			if (prepareRestart == true) {
-	    				try {
-							Thread.sleep(100);
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}
-	    				backgroundMusic.stop();
-	    				gameEnd.play();
-	    			}
-					return null;
-	            }
-	        };
-	    }	
-    };	
-	
 	public void checkWinMethod() {
-		if (piecesOnBoard == 42) 
+		if (piecesOnBoard == 42)
 			winner = "It's a Tie!";
-		else if (backBoard[lastRow][lastCol] == 'Y')
+		else if (backBoard[recentRow][recentCol] == 'Y')
 			winner = "Yellow Wins!";
 		else
 			winner = "Red Wins!";
 		//Checks if the last piece's color is equal to the ...
 		//3 to the Left
-		if (lastCol-3 >= 0)
-			if (backBoard[lastRow][lastCol-3] == backBoard[lastRow][lastCol]
-					&& backBoard[lastRow][lastCol-2] == backBoard[lastRow][lastCol]
-					&& backBoard[lastRow][lastCol-1] == backBoard[lastRow][lastCol])
+		if (recentCol-3 >= 0)
+			if (backBoard[recentRow][recentCol-3] == backBoard[recentRow][recentCol]
+					&& backBoard[recentRow][recentCol-2] == backBoard[recentRow][recentCol]
+					&& backBoard[recentRow][recentCol-1] == backBoard[recentRow][recentCol])
 				playerHasWon = true;
 		//2 to the Left and 1 to the Right
-		if (lastCol-2 >= 0 && lastCol+1 <=6)
-			if (backBoard[lastRow][lastCol-2] == backBoard[lastRow][lastCol]
-					&& backBoard[lastRow][lastCol-1] == backBoard[lastRow][lastCol]
-					&& backBoard[lastRow][lastCol+1] == backBoard[lastRow][lastCol])
+		if (recentCol-2 >= 0 && recentCol+1 <= 6)
+			if (backBoard[recentRow][recentCol-2] == backBoard[recentRow][recentCol]
+					&& backBoard[recentRow][recentCol-1] == backBoard[recentRow][recentCol]
+					&& backBoard[recentRow][recentCol+1] == backBoard[recentRow][recentCol])
 				playerHasWon = true;
 		//1 to the Left and 2 to the Right
-		if (lastCol-1 >= 0 && lastCol+2 <=6)
-			if (backBoard[lastRow][lastCol-1] == backBoard[lastRow][lastCol]
-					&& backBoard[lastRow][lastCol+1] == backBoard[lastRow][lastCol]
-					&& backBoard[lastRow][lastCol+2] == backBoard[lastRow][lastCol])
+		if (recentCol-1 >= 0 && recentCol+2 <= 6)
+			if (backBoard[recentRow][recentCol-1] == backBoard[recentRow][recentCol]
+					&& backBoard[recentRow][recentCol+1] == backBoard[recentRow][recentCol]
+					&& backBoard[recentRow][recentCol+2] == backBoard[recentRow][recentCol])
 				playerHasWon = true;
 		//3 to the Right
-		if (lastCol+3 <=6)
-			if (backBoard[lastRow][lastCol+1] == backBoard[lastRow][lastCol]
-					&& backBoard[lastRow][lastCol+2] == backBoard[lastRow][lastCol]
-					&& backBoard[lastRow][lastCol+3] == backBoard[lastRow][lastCol])
+		if (recentCol+3 <= 6)
+			if (backBoard[recentRow][recentCol+1] == backBoard[recentRow][recentCol]
+					&& backBoard[recentRow][recentCol+2] == backBoard[recentRow][recentCol]
+					&& backBoard[recentRow][recentCol+3] == backBoard[recentRow][recentCol])
 				playerHasWon = true;
 		//3 Down
-		if (lastRow+3 <=5)
-			if (backBoard[lastRow+1][lastCol] == backBoard[lastRow][lastCol]
-					&& backBoard[lastRow+2][lastCol] == backBoard[lastRow][lastCol]
-					&& backBoard[lastRow+3][lastCol] == backBoard[lastRow][lastCol])
+		if (recentRow+3 <= 5)
+			if (backBoard[recentRow+1][recentCol] == backBoard[recentRow][recentCol]
+					&& backBoard[recentRow+2][recentCol] == backBoard[recentRow][recentCol]
+					&& backBoard[recentRow+3][recentCol] == backBoard[recentRow][recentCol])
 				playerHasWon = true;
 		//3 to the bottom Left
-		if (lastCol-3 >= 0 && lastRow+3 <=5)
-			if (backBoard[lastRow+1][lastCol-1] == backBoard[lastRow][lastCol]
-					&& backBoard[lastRow+2][lastCol-2] == backBoard[lastRow][lastCol]
-					&& backBoard[lastRow+3][lastCol-3] == backBoard[lastRow][lastCol])
+		if (recentCol-3 >= 0 && recentRow+3 <= 5)
+			if (backBoard[recentRow+1][recentCol-1] == backBoard[recentRow][recentCol]
+					&& backBoard[recentRow+2][recentCol-2] == backBoard[recentRow][recentCol]
+					&& backBoard[recentRow+3][recentCol-3] == backBoard[recentRow][recentCol])
 				playerHasWon = true;
 		//2 to the bottom Left and 1 to the top Right
-		if (lastCol - 2 >= 0 && lastRow + 2 <= 5 && lastCol + 1 <= 6 && lastRow - 1 >= 0)
-			if (backBoard[lastRow-1][lastCol+1] == backBoard[lastRow][lastCol]
-					&& backBoard[lastRow+1][lastCol-1] == backBoard[lastRow][lastCol]
-					&& backBoard[lastRow+2][lastCol-2] == backBoard[lastRow][lastCol])
+		if (recentCol - 2 >= 0 && recentRow + 2 <= 5 && recentCol + 1 <= 6 && recentRow - 1 >= 0)
+			if (backBoard[recentRow-1][recentCol+1] == backBoard[recentRow][recentCol]
+					&& backBoard[recentRow+1][recentCol-1] == backBoard[recentRow][recentCol]
+					&& backBoard[recentRow+2][recentCol-2] == backBoard[recentRow][recentCol])
 				playerHasWon = true;
 		//1 to the bottom Left and 2 to the top Right
-		if (lastCol - 1 >= 0 && lastRow + 1 <= 5 && lastCol + 2 <= 6 && lastRow - 2 >= 0)
-			if (backBoard[lastRow-2][lastCol+2] == backBoard[lastRow][lastCol]
-					&& backBoard[lastRow-1][lastCol+1] == backBoard[lastRow][lastCol]
-					&& backBoard[lastRow+1][lastCol-1] == backBoard[lastRow][lastCol])
+		if (recentCol - 1 >= 0 && recentRow + 1 <= 5 && recentCol + 2 <= 6 && recentRow - 2 >= 0)
+			if (backBoard[recentRow-2][recentCol+2] == backBoard[recentRow][recentCol]
+					&& backBoard[recentRow-1][recentCol+1] == backBoard[recentRow][recentCol]
+					&& backBoard[recentRow+1][recentCol-1] == backBoard[recentRow][recentCol])
 				playerHasWon = true;
 		//3 to the top Right
-		if (lastCol + 3 <= 6 && lastRow - 3 >= 0)
-			if (backBoard[lastRow-3][lastCol+3] == backBoard[lastRow][lastCol]
-					&& backBoard[lastRow-2][lastCol+2] == backBoard[lastRow][lastCol]
-					&& backBoard[lastRow-1][lastCol+1] == backBoard[lastRow][lastCol])
+		if (recentCol + 3 <= 6 && recentRow - 3 >= 0)
+			if (backBoard[recentRow-3][recentCol+3] == backBoard[recentRow][recentCol]
+					&& backBoard[recentRow-2][recentCol+2] == backBoard[recentRow][recentCol]
+					&& backBoard[recentRow-1][recentCol+1] == backBoard[recentRow][recentCol])
 				playerHasWon = true;
 		//3 to the bottom Right
-		if (lastCol+3 <=6 && lastRow+3 <=5)
-			if (backBoard[lastRow+1][lastCol+1] == backBoard[lastRow][lastCol]
-					&& backBoard[lastRow+2][lastCol+2] == backBoard[lastRow][lastCol]
-					&& backBoard[lastRow+3][lastCol+3] == backBoard[lastRow][lastCol])
+		if (recentCol+3 <=6 && recentRow+3 <=5)
+			if (backBoard[recentRow+1][recentCol+1] == backBoard[recentRow][recentCol]
+					&& backBoard[recentRow+2][recentCol+2] == backBoard[recentRow][recentCol]
+					&& backBoard[recentRow+3][recentCol+3] == backBoard[recentRow][recentCol])
 				playerHasWon = true;
 		
 		//2 to the bottom Right and 1 to the top Left
-		if (lastCol - 1 >= 0 && lastRow + 2 <= 5 && lastCol + 2 <= 6 && lastRow - 1 >= 0)
-			if (backBoard[lastRow-1][lastCol-1] == backBoard[lastRow][lastCol]
-					&& backBoard[lastRow+1][lastCol+1] == backBoard[lastRow][lastCol]
-					&& backBoard[lastRow+2][lastCol+2] == backBoard[lastRow][lastCol])
+		if (recentCol - 1 >= 0 && recentRow + 2 <= 5 && recentCol + 2 <= 6 && recentRow - 1 >= 0)
+			if (backBoard[recentRow-1][recentCol-1] == backBoard[recentRow][recentCol]
+					&& backBoard[recentRow+1][recentCol+1] == backBoard[recentRow][recentCol]
+					&& backBoard[recentRow+2][recentCol+2] == backBoard[recentRow][recentCol])
 				playerHasWon = true;
 		
 		//1 to the bottom Right and 2 to the top Left
-		if (lastCol - 2 >= 0 && lastRow + 1 <= 5 && lastCol + 1 <= 6 && lastRow - 2 >= 0)
-			if (backBoard[lastRow-2][lastCol-2] == backBoard[lastRow][lastCol]
-					&& backBoard[lastRow-1][lastCol-1] == backBoard[lastRow][lastCol]
-					&& backBoard[lastRow+1][lastCol+1] == backBoard[lastRow][lastCol])
+		if (recentCol - 2 >= 0 && recentRow + 1 <= 5 && recentCol + 1 <= 6 && recentRow - 2 >= 0)
+			if (backBoard[recentRow-2][recentCol-2] == backBoard[recentRow][recentCol]
+					&& backBoard[recentRow-1][recentCol-1] == backBoard[recentRow][recentCol]
+					&& backBoard[recentRow+1][recentCol+1] == backBoard[recentRow][recentCol])
 				playerHasWon = true;
 		//3 to the top Left
-		if (lastCol - 3 >= 0 && lastRow - 3 >= 0)
-			if (backBoard[lastRow-3][lastCol-3] == backBoard[lastRow][lastCol]
-					&& backBoard[lastRow-2][lastCol-2] == backBoard[lastRow][lastCol]
-					&& backBoard[lastRow-1][lastCol-1] == backBoard[lastRow][lastCol])
+		if (recentCol - 3 >= 0 && recentRow - 3 >= 0)
+			if (backBoard[recentRow-3][recentCol-3] == backBoard[recentRow][recentCol]
+					&& backBoard[recentRow-2][recentCol-2] == backBoard[recentRow][recentCol]
+					&& backBoard[recentRow-1][recentCol-1] == backBoard[recentRow][recentCol])
 				playerHasWon = true;
-		if (playerHasWon)
+		if (playerHasWon) {
+			backgroundMusic.stop();
+			gameEnd.play();
 			prepareRestart = true;
+		}
 	}
 	
 	public void restartGameMethod() {
