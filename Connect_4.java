@@ -395,9 +395,6 @@ public class Connect_4 extends Application {
     		if (previousRow != recentRow || previousCol != recentCol) {
     				break;
     		}
-			//Breaks if there is one spot left
-			else if (piecesOnBoard == 42)
-				break;
 		}
 	}
 
@@ -420,8 +417,10 @@ public class Connect_4 extends Application {
 	}
 	
 	public void checkWinMethod() {
-		if (piecesOnBoard == 42)
+		if (piecesOnBoard == 42) {
 			winner = "It's a Tie!";
+			playerHasWon = true;
+		}
 		else if (backBoard[recentRow][recentCol] == 'Y')
 			winner = "Yellow Wins!";
 		else
