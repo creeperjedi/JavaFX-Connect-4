@@ -52,16 +52,6 @@ public class Connect_4 extends Application {
     int columns = 7;
     int piecesOnBoard = 0;
     int completedGames = 0;
-    //Creates the 2d-array that will be used to check for game wins
-    /* Organized like a traditional co-ordinate plane with an inverted y-axis
-     * 0, 1, 2, 3, 4, 5, 6 < [][Columns] 
-     * 1 
-     * 2 
-     * 3 
-     * 4 
-     * 5
-     * ^ [Rows][] 
-     */
     char[][] backBoard;
     boolean firstGame = true;
     boolean againstComputer = false;
@@ -104,6 +94,8 @@ public class Connect_4 extends Application {
 	    	    }
     	    }
         });
+
+        backgroundMusic.setCycleCount(AudioClip.INDEFINITE);
         
     	//**Main Menu**
         Label pickOponent = new Label("Pick your opponent");
@@ -187,16 +179,6 @@ public class Connect_4 extends Application {
             }
         });
         
-        //Adds every piece to the game board (boardPane) and sets their color to white to represent empty spaces in the board
-		for (Column column: columnArray) {
-	        for (GamePiece piece: column.getPieceArray()) {
-	        	piece.setScaleX(0.80);
-	        	piece.setScaleY(0.80);
-	        	piece.setFill(Color.WHITE);
-	        	boardPane.getChildren().add(piece);
-	        }
-	    }
-        
         GridPane grid = new GridPane();
         grid.setPadding(new Insets(10, 10, 10, 10));
         grid.setVgap(8);
@@ -229,6 +211,16 @@ public class Connect_4 extends Application {
     
     public void startGameMethod() {
     	if (firstGame) {	    	
+    	    //Creates the 2d-array that will be used to check for game wins
+    	    /* Organized like a traditional co-ordinate plane with an inverted y-axis
+    	     * 0, 1, 2, 3, 4, 5, 6 < [][columns] 
+    	     * 1 
+    	     * 2 
+    	     * 3 
+    	     * 4 
+    	     * 5
+    	     * ^ [rows][] 
+    	     */
 	    	backBoard = new char[rows][columns];
 	    	
 	    	int currentRow = 1;
@@ -255,7 +247,9 @@ public class Connect_4 extends Application {
 	         * F1, F2, F3, F4, F5, F6, F7
 	         */
 	    	
-	    	//Scales every GamePiece and sets them to white to represent the empty spaces on the board
+	    	/* Adds each GamePiece from each Column to the game board (boardPane)
+	    	 * and sets their color to white to represent empty spaces on the board
+	    	 */
 			for (Column column: columnArray) {
 		        for (GamePiece piece: column.getPieceArray()) {
 		        	piece.setScaleX(0.80);
@@ -372,6 +366,9 @@ public class Connect_4 extends Application {
 			}
     	    previousRow = recentRow;
     	    previousCol = recentCol;
+    	    /* The computer places pieces by manipulating the xMouse value to select a column and then
+    	     * calls the humnanInputMethod() to mimic the process of a mouse click on that column
+    	     */
     	    humanInputMethod();
     		if (previousRow != recentRow || previousCol != recentCol) {
     				break;
@@ -379,6 +376,9 @@ public class Connect_4 extends Application {
 		}
 	}
 
+	/* Checks if the space "distance" columns away from recentCol and on the same row as recentRow
+	 * is empty and if so sets xMouse to the centerX of that space's column
+	 */
 	public void backBoardCalculator(int distance) {
 		//Checks if the column being tested is valid
 		if (recentCol+distance >= 0 && recentCol+distance <= (columns - 1))
