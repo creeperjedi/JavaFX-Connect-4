@@ -1,12 +1,15 @@
+import java.util.ArrayList;
+
 public class Column {
-	private GamePiece[] pieceArray;
+	private ArrayList<GamePiece> pieceArray = new ArrayList<GamePiece> ();
 	private double rightBorder;
 	private double centerX;
+	private int columnNumber;
 	private int placedPieces = 0;
 	
 	//When numbering Columns start at 1, not 0
-	public Column(GamePiece[] pieceArray) {
-		this.pieceArray = pieceArray;
+	public Column(int columnNumber) {
+		this.columnNumber = columnNumber;
 	}
 	
 	//All previous columns must be of equal size for centerX to correct
@@ -14,15 +17,19 @@ public class Column {
 		rightBorder = borderValue;
 	}
 	
-	public void setCenter(double previousBorder) {
-		centerX = (previousBorder + rightBorder) / 2;
+	public void setCenter(double centerValue) {
+		centerX = centerValue;
+	}
+	
+	public void addGamePiece(GamePiece piece) {
+		pieceArray.add(piece);
 	}
 	
 	public void addPiece() {
 		placedPieces++;
 	}
 	
-	public GamePiece[] getPieceArray() {
+	public ArrayList<GamePiece> getPieceArray() {
 		return pieceArray;
 	}
 	
@@ -32,6 +39,10 @@ public class Column {
 	
 	public double getCenter() {
 		return centerX;
+	}
+	
+	public int getColumnNumber() {
+		return columnNumber;
 	}
 	
 	public int getPieces() {

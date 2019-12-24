@@ -16,6 +16,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.media.AudioClip;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import java.util.ArrayList;
 import java.util.Random;
 
 public class Connect_4 extends Application {	
@@ -31,65 +32,7 @@ public class Connect_4 extends Application {
     
     Label topLabel = new Label("Welcome to JavaFX Connect-4"); 
     
-    //Creates the Circles that will represent the game pieces
-    /*Starts with A1 in the Top Left and F7 in the Bottom Right
-     * A1, A2, A3, A4, A5, A6, A7
-     * B1, B2, B3, B4, B5, B6, B7
-     * C1, C2, C3, C4, C5, C6, C7
-     * D1, D2, D3, D4, D5, D6, D7
-     * E1, E2, E3, E4, E5, E6, E7
-     * F1, F2, F3, F4, F5, F6, F7
-     */
-    GamePiece A1 = new GamePiece('A', 1);
-    GamePiece A2 = new GamePiece('A', 2);
-    GamePiece A3 = new GamePiece('A', 3);
-    GamePiece A4 = new GamePiece('A', 4);
-    GamePiece A5 = new GamePiece('A', 5);
-    GamePiece A6 = new GamePiece('A', 6);
-    GamePiece A7 = new GamePiece('A', 7);
-    GamePiece B1 = new GamePiece('B', 1);
-    GamePiece B2 = new GamePiece('B', 2);
-    GamePiece B3 = new GamePiece('B', 3);
-    GamePiece B4 = new GamePiece('B', 4);
-    GamePiece B5 = new GamePiece('B', 5);
-    GamePiece B6 = new GamePiece('B', 6);
-    GamePiece B7 = new GamePiece('B', 7);
-    GamePiece C1 = new GamePiece('C', 1);
-    GamePiece C2 = new GamePiece('C', 2);
-    GamePiece C3 = new GamePiece('C', 3);
-    GamePiece C4 = new GamePiece('C', 4);
-    GamePiece C5 = new GamePiece('C', 5);
-    GamePiece C6 = new GamePiece('C', 6);
-    GamePiece C7 = new GamePiece('C', 7);
-    GamePiece D1 = new GamePiece('D', 1);
-    GamePiece D2 = new GamePiece('D', 2);
-    GamePiece D3 = new GamePiece('D', 3);
-    GamePiece D4 = new GamePiece('D', 4);
-    GamePiece D5 = new GamePiece('D', 5);
-    GamePiece D6 = new GamePiece('D', 6);
-    GamePiece D7 = new GamePiece('D', 7);
-    GamePiece E1 = new GamePiece('E', 1);
-    GamePiece E2 = new GamePiece('E', 2);
-    GamePiece E3 = new GamePiece('E', 3);
-    GamePiece E4 = new GamePiece('E', 4);
-    GamePiece E5 = new GamePiece('E', 5);
-    GamePiece E6 = new GamePiece('E', 6);
-    GamePiece E7 = new GamePiece('E', 7);
-    GamePiece F1 = new GamePiece('F', 1);
-    GamePiece F2 = new GamePiece('F', 2);
-    GamePiece F3 = new GamePiece('F', 3);
-    GamePiece F4 = new GamePiece('F', 4);
-    GamePiece F5 = new GamePiece('F', 5);
-    GamePiece F6 = new GamePiece('F', 6);
-    GamePiece F7 = new GamePiece('F', 7);
-    Column column1 = new Column(new GamePiece[]{F1, E1, D1, C1, B1, A1});
-    Column column2 = new Column(new GamePiece[]{F2, E2, D2, C2, B2, A2});
-    Column column3 = new Column(new GamePiece[]{F3, E3, D3, C3, B3, A3});
-    Column column4 = new Column(new GamePiece[]{F4, E4, D4, C4, B4, A4});
-    Column column5 = new Column(new GamePiece[]{F5, E5, D5, C5, B5, A5});
-    Column column6 = new Column(new GamePiece[]{F6, E6, D6, C6, B6, A6});
-    Column column7 = new Column(new GamePiece[]{F7, E7, D7, C7, B7, A7});
-    Column[] columnArray = new Column[] {column1, column2, column3, column4, column5, column6, column7};
+    ArrayList<Column> columnArray = new ArrayList<Column>();
     
     AudioClip gameEnd = new AudioClip(this.getClass().getResource("/res/gameOver.wav").toString());
     AudioClip backgroundMusic = new AudioClip(this.getClass().getResource("/res/backgroundMusic.mp3").toString());
@@ -105,6 +48,8 @@ public class Connect_4 extends Application {
     int previousCol;
     int xMouse;
     int yMouse;
+    int rows = 6;
+    int columns = 7;
     int piecesOnBoard = 0;
     int completedGames = 0;
     //Creates the 2d-array that will be used to check for game wins
@@ -117,7 +62,8 @@ public class Connect_4 extends Application {
      * 5
      * ^ [Rows][] 
      */
-    char[][] backBoard = new char[6][7];
+    char[][] backBoard;
+    boolean firstGame = true;
     boolean againstComputer = false;
     boolean placementChosen = false;
     boolean playerHasWon = false;
@@ -196,26 +142,23 @@ public class Connect_4 extends Application {
                 resizedWidth = (double) newSceneWidth;
                 
                 //Sets the rightBorder for each Column
-        		column1.setBorder(resizedWidth / 7);
-        		column2.setBorder(resizedWidth / 7 * 2);
-        		column3.setBorder(resizedWidth / 7 * 3);
-        		column4.setBorder(resizedWidth / 7 * 4);     		
-        		column5.setBorder(resizedWidth / 7 * 5);        		
-        		column6.setBorder(resizedWidth / 7 * 6);       		
-        		column7.setBorder(resizedWidth / 7 * 7);
+                for (Column column : columnArray) {
+                	column.setBorder(resizedWidth / columns * column.getColumnNumber());
+                }
         		
-        		//Sets the Center for each Column
-        		column1.setCenter(0);
-        		column2.setCenter(column1.getBorder());
-        		column3.setCenter(column2.getBorder());        		
-        		column4.setCenter(column3.getBorder());
-        		column5.setCenter(column4.getBorder());
-        		column6.setCenter(column5.getBorder());
-        		column7.setCenter(column6.getBorder());
+        		/* Sets the Center for each Column [this is calculated by dividing the width of
+        		 * the window by the number of columns (to divide it into even sections for each
+        		 * Column) then by multiplying that by the quantity of Column's column number - 0.5
+        		 * (to set the center of the column in the middle of the column since multiplying
+        		 * only by the Column's number would equal its border instead of its center)]
+        		 */
+                for (Column column : columnArray) {
+                	column.setCenter(resizedWidth / columns * (column.getColumnNumber() - 0.5));
+                }
         		
-        		double circleRadius = column1.getBorder() / 2;
+        		double circleRadius = columnArray.get(0).getBorder() / 2;
         		
-        		//Sets the CenterX and Radius for each Circle in each Column
+        		//Sets the CenterX and Radius for each GamePiece in each Column
         		for (Column column: columnArray) {
         			for (GamePiece piece: column.getPieceArray()) {
             			piece.setCenterX(column.getCenter());
@@ -229,19 +172,17 @@ public class Connect_4 extends Application {
                 System.out.println("Height: " + newSceneHeight);
                 resizedHeight = (double) newSceneHeight;
                 
-                /* Sets the y coordinate, centerY, for each GamePiece in each Column [this is calculated by 
-                 * dividing the current height by 6 (for each row) then by 2 (to get the center of that row)
-                 * the by multiplying by the transform variable which changes the centerY so that the GamePiece
-                 * is in its appropriate row
-                 */
-                int transform = 11;
+        		/* Sets the Center for each GamePiece in each Column [this is calculated by
+        		 * dividing the height of the window by the number of rows (to divide it into
+        		 * even sections for each row) then by multiplying that by the quantity of
+        		 * GamePiece's column number - 0.5 (to set the center of the GamePiece in the
+        		 * middle of the row since multiplying only by the GamePiece's row would equal
+        		 * the row's border instead of its center)]
+        		 */
         		for (Column column: columnArray) {
         	        for (GamePiece piece: column.getPieceArray()) {
-        	        		System.out.println(piece.name);
-        	            	piece.setCenterY(resizedHeight / 6 / 2 * transform);
-        	            	transform -= 2;
+        	            	piece.setCenterY(resizedHeight / rows * (piece.getRow() - 0.5));
         	        }
-        	        transform = 11;
         		}                
             }
         });
@@ -287,6 +228,45 @@ public class Connect_4 extends Application {
     }
     
     public void startGameMethod() {
+    	if (firstGame) {	    	
+	    	backBoard = new char[rows][columns];
+	    	
+	    	int currentRow = 1;
+	    	int currentCol = 1;
+	    	
+	    	//Populates columnArray with the number of specified Columns
+	    	while(currentCol <= columns) {
+	    		columnArray.add(new Column(currentCol++));
+	    	}
+	    	
+	    	//Populates each Column in columnArray with GamePieces starting from the bottom (ex. F1 -> A1)
+	    	for (Column column : columnArray) {
+	        	while(currentRow <= rows) {
+	        		column.addGamePiece(new GamePiece((char) ('A' + rows - currentRow++), column.getColumnNumber()));
+	        	}
+	        	currentRow = 1;
+	    	}
+	        /* The final board starts with A1 in the Top Left and F7 in the Bottom Right (for a normal sized board)
+	         * A1, A2, A3, A4, A5, A6, A7
+	         * B1, B2, B3, B4, B5, B6, B7
+	         * C1, C2, C3, C4, C5, C6, C7
+	         * D1, D2, D3, D4, D5, D6, D7
+	         * E1, E2, E3, E4, E5, E6, E7
+	         * F1, F2, F3, F4, F5, F6, F7
+	         */
+	    	
+	    	//Scales every GamePiece and sets them to white to represent the empty spaces on the board
+			for (Column column: columnArray) {
+		        for (GamePiece piece: column.getPieceArray()) {
+		        	piece.setScaleX(0.80);
+		        	piece.setScaleY(0.80);
+		        	piece.setFill(Color.WHITE);
+		        	boardPane.getChildren().add(piece);
+		        }
+		    }
+	    	firstGame = false;
+    	}
+    	
     	//Saves the dimensions of the mainMenu window and sets the Scene to gameScreen
         windowHeight = window.getHeight();
         windowWidth = window.getWidth();
@@ -331,7 +311,7 @@ public class Connect_4 extends Application {
 		 * column and so on until there are no columns left
 		 */
 		for (Column column: columnArray) {
-			if (xMouse <= column.getBorder() && column.getPieces() < 6) {
+			if (xMouse <= column.getBorder() && column.getPieces() < rows) {
 	        	for (GamePiece piece: column.getPieceArray()) {
 	            	if (piece.getFill().equals(Color.WHITE)) {
 	            		piece.setFill(currentColor);
@@ -345,9 +325,10 @@ public class Connect_4 extends Application {
 	        	break;
 			}
 		}
-		
-        piecesOnBoard = column1.getPieces() + column2.getPieces() + column3.getPieces()
-        		+ column4.getPieces() + column5.getPieces() + column6.getPieces() + column7.getPieces();
+		piecesOnBoard = 0;
+		for (Column column: columnArray) {
+			 piecesOnBoard += column.getPieces();
+	    }
         System.out.println("Number of pieces on the board: " + piecesOnBoard);
 	}
 	
@@ -369,7 +350,7 @@ public class Connect_4 extends Application {
 							backBoardCalculator(+1);
 					}
 				//2 to the Right
-				if (recentCol+2 <= 6 && placementChosen == false)
+				if (recentCol+2 <= (columns - 1) && placementChosen == false)
 					if (backBoard[recentRow][recentCol+1] == backBoard[recentRow][recentCol]
 							&& backBoard[recentRow][recentCol+2] == backBoard[recentRow][recentCol]) {
 						//Tries to place a piece to the Right of the row of 3:   ⚫ ⚪ ⚪ ▪️ 
@@ -379,7 +360,7 @@ public class Connect_4 extends Application {
 							backBoardCalculator(-1);
 					}
 				//2 Down
-				if (recentRow+2 <=5 && placementChosen == false)
+				if (recentRow+2 <= (rows - 1) && placementChosen == false)
 					if (backBoard[recentRow+1][recentCol] == backBoard[recentRow][recentCol]
 							&& backBoard[recentRow+2][recentCol] == backBoard[recentRow][recentCol]) {
 						placementChosen = true;
@@ -387,7 +368,7 @@ public class Connect_4 extends Application {
 				System.out.println("Choice made: " + placementChosen);
 			}
 			if (!placementChosen) {
-				xMouse = rand.nextInt((int) column7.getBorder());
+				xMouse = rand.nextInt((int) columnArray.get(columnArray.size()-1).getBorder());
 			}
     	    previousRow = recentRow;
     	    previousCol = recentCol;
@@ -400,24 +381,24 @@ public class Connect_4 extends Application {
 
 	public void backBoardCalculator(int distance) {
 		//Checks if the column being tested is valid
-		if (recentCol+distance >= 0 && recentCol+distance <= 6)
+		if (recentCol+distance >= 0 && recentCol+distance <= (columns - 1))
 			//Checks if the space being tested is empty
 			if (backBoard[recentRow][recentCol+distance] == 0)
 				//Checks if the row being tested is the bottom-most row
-				if (recentRow == 5) {
-					xMouse = (int) columnArray[recentCol+distance].getCenter();
+				if (recentRow == (rows - 1)) {
+					xMouse = (int) columnArray.get(recentCol+distance).getCenter();
 					placementChosen = true;
 				}
 				//Checks if the space below the space being tested is occupied
 				//(to ensure that the piece will land where it is placed)
 				else if (backBoard[recentRow+1][recentCol+distance] != 0) {
-						xMouse = (int) columnArray[recentCol+distance].getCenter();
+						xMouse = (int) columnArray.get(recentCol+distance).getCenter();
 						placementChosen = true;
 				}
 	}
 	
 	public void checkWinMethod() {
-		if (piecesOnBoard == 42) {
+		if (piecesOnBoard == (rows * columns)) {
 			winner = "It's a Tie!";
 			playerHasWon = true;
 		}
@@ -433,69 +414,69 @@ public class Connect_4 extends Application {
 					&& backBoard[recentRow][recentCol-1] == backBoard[recentRow][recentCol])
 				playerHasWon = true;
 		//2 to the Left and 1 to the Right
-		if (recentCol-2 >= 0 && recentCol+1 <= 6)
+		if (recentCol-2 >= 0 && recentCol+1 <= (columns - 1))
 			if (backBoard[recentRow][recentCol-2] == backBoard[recentRow][recentCol]
 					&& backBoard[recentRow][recentCol-1] == backBoard[recentRow][recentCol]
 					&& backBoard[recentRow][recentCol+1] == backBoard[recentRow][recentCol])
 				playerHasWon = true;
 		//1 to the Left and 2 to the Right
-		if (recentCol-1 >= 0 && recentCol+2 <= 6)
+		if (recentCol-1 >= 0 && recentCol+2 <= (columns - 1))
 			if (backBoard[recentRow][recentCol-1] == backBoard[recentRow][recentCol]
 					&& backBoard[recentRow][recentCol+1] == backBoard[recentRow][recentCol]
 					&& backBoard[recentRow][recentCol+2] == backBoard[recentRow][recentCol])
 				playerHasWon = true;
 		//3 to the Right
-		if (recentCol+3 <= 6)
+		if (recentCol+3 <= (columns - 1))
 			if (backBoard[recentRow][recentCol+1] == backBoard[recentRow][recentCol]
 					&& backBoard[recentRow][recentCol+2] == backBoard[recentRow][recentCol]
 					&& backBoard[recentRow][recentCol+3] == backBoard[recentRow][recentCol])
 				playerHasWon = true;
 		//3 Down
-		if (recentRow+3 <= 5)
+		if (recentRow+3 <= (rows - 1))
 			if (backBoard[recentRow+1][recentCol] == backBoard[recentRow][recentCol]
 					&& backBoard[recentRow+2][recentCol] == backBoard[recentRow][recentCol]
 					&& backBoard[recentRow+3][recentCol] == backBoard[recentRow][recentCol])
 				playerHasWon = true;
 		//3 to the bottom Left
-		if (recentCol-3 >= 0 && recentRow+3 <= 5)
+		if (recentCol-3 >= 0 && recentRow+3 <= (rows - 1))
 			if (backBoard[recentRow+1][recentCol-1] == backBoard[recentRow][recentCol]
 					&& backBoard[recentRow+2][recentCol-2] == backBoard[recentRow][recentCol]
 					&& backBoard[recentRow+3][recentCol-3] == backBoard[recentRow][recentCol])
 				playerHasWon = true;
 		//2 to the bottom Left and 1 to the top Right
-		if (recentCol - 2 >= 0 && recentRow + 2 <= 5 && recentCol + 1 <= 6 && recentRow - 1 >= 0)
+		if (recentCol - 2 >= 0 && recentRow + 2 <= (rows - 1) && recentCol + 1 <= (columns - 1) && recentRow - 1 >= 0)
 			if (backBoard[recentRow-1][recentCol+1] == backBoard[recentRow][recentCol]
 					&& backBoard[recentRow+1][recentCol-1] == backBoard[recentRow][recentCol]
 					&& backBoard[recentRow+2][recentCol-2] == backBoard[recentRow][recentCol])
 				playerHasWon = true;
 		//1 to the bottom Left and 2 to the top Right
-		if (recentCol - 1 >= 0 && recentRow + 1 <= 5 && recentCol + 2 <= 6 && recentRow - 2 >= 0)
+		if (recentCol - 1 >= 0 && recentRow + 1 <= (rows - 1) && recentCol + 2 <= (columns - 1) && recentRow - 2 >= 0)
 			if (backBoard[recentRow-2][recentCol+2] == backBoard[recentRow][recentCol]
 					&& backBoard[recentRow-1][recentCol+1] == backBoard[recentRow][recentCol]
 					&& backBoard[recentRow+1][recentCol-1] == backBoard[recentRow][recentCol])
 				playerHasWon = true;
 		//3 to the top Right
-		if (recentCol + 3 <= 6 && recentRow - 3 >= 0)
+		if (recentCol + 3 <= (columns - 1) && recentRow - 3 >= 0)
 			if (backBoard[recentRow-3][recentCol+3] == backBoard[recentRow][recentCol]
 					&& backBoard[recentRow-2][recentCol+2] == backBoard[recentRow][recentCol]
 					&& backBoard[recentRow-1][recentCol+1] == backBoard[recentRow][recentCol])
 				playerHasWon = true;
 		//3 to the bottom Right
-		if (recentCol+3 <=6 && recentRow+3 <=5)
+		if (recentCol + 3 <= (columns - 1) && recentRow + 3 <= (rows - 1))
 			if (backBoard[recentRow+1][recentCol+1] == backBoard[recentRow][recentCol]
 					&& backBoard[recentRow+2][recentCol+2] == backBoard[recentRow][recentCol]
 					&& backBoard[recentRow+3][recentCol+3] == backBoard[recentRow][recentCol])
 				playerHasWon = true;
 		
 		//2 to the bottom Right and 1 to the top Left
-		if (recentCol - 1 >= 0 && recentRow + 2 <= 5 && recentCol + 2 <= 6 && recentRow - 1 >= 0)
+		if (recentCol - 1 >= 0 && recentRow + 2 <= (rows - 1) && recentCol + 2 <= (columns - 1) && recentRow - 1 >= 0)
 			if (backBoard[recentRow-1][recentCol-1] == backBoard[recentRow][recentCol]
 					&& backBoard[recentRow+1][recentCol+1] == backBoard[recentRow][recentCol]
 					&& backBoard[recentRow+2][recentCol+2] == backBoard[recentRow][recentCol])
 				playerHasWon = true;
 		
 		//1 to the bottom Right and 2 to the top Left
-		if (recentCol - 2 >= 0 && recentRow + 1 <= 5 && recentCol + 1 <= 6 && recentRow - 2 >= 0)
+		if (recentCol - 2 >= 0 && recentRow + 1 <= (rows - 1) && recentCol + 1 <= (columns - 1) && recentRow - 2 >= 0)
 			if (backBoard[recentRow-2][recentCol-2] == backBoard[recentRow][recentCol]
 					&& backBoard[recentRow-1][recentCol-1] == backBoard[recentRow][recentCol]
 					&& backBoard[recentRow+1][recentCol+1] == backBoard[recentRow][recentCol])
@@ -519,8 +500,9 @@ public class Connect_4 extends Application {
 			gameEnd.play();
 		}
 		
-		column1.resetPieces(); column2.resetPieces(); column3.resetPieces(); column4.resetPieces();
-		column5.resetPieces(); column6.resetPieces(); column7.resetPieces(); 
+		for (Column column : columnArray) {
+			column.resetPieces();
+		}
 		
 		piecesOnBoard = 0;
 		
@@ -534,7 +516,7 @@ public class Connect_4 extends Application {
 	        	piece.setFill(Color.WHITE);
 	        }
 	    }
-		backBoard = new char[6][7];
+		backBoard = new char[rows][columns];
 		
 		completedGames++;
 		againstComputer = false;
