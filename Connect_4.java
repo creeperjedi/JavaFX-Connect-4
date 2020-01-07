@@ -419,7 +419,7 @@ public class Connect_4 extends Application {
 		 * "connect" variable)
 		 * === Diagram ===
 		 * ⚪ ⚪ ⚪ ⚫ ⚪ ⚪ ⚪
-		 * ^      ^----- lastIndex (0)
+		 * ^          ^- lastIndex (0)
 		 * ------------- firstIndex(-3)
 		 * The numbers in parenthesis indicate the variable's value which represent how
 		 * many columns away they are from the last placed piece and form the borders
@@ -429,7 +429,7 @@ public class Connect_4 extends Application {
 		 * to firstIndex to start. Every piece in this search area will be checked to see
 		 * if they are equal to the last piece placed.
 		 * ⚪ ⚪ ⚪ ⚫ ⚪ ⚪ ⚪  | ⚪ ⚪ ⚪ ⚫ ⚪ ⚪ ⚪  | ⚪ ⚪ ⚪ ⚫ ⚪ ⚪ ⚪  | ⚪ ⚪ ⚪ ⚫ ⚪ ⚪ ⚪ 
-		 * ^                     ^                    ^                   ^
+		 * ^                               ^                              ^                              ^
 		 * The search area is the minimum 
 		 * number of pieces that must be equal or else the needed number of connections
 		 * ("connect") will not be met. Because of this fact, if any piece is not equal
@@ -439,7 +439,7 @@ public class Connect_4 extends Application {
 		 * or the maximum number of check areas have been searched. The maximum number 
 		 * of search areas is the same as the value of "connect".
 		 * ⚪ ⚪ ⚪ ⚫ ⚪ ⚪ ⚪  | ⚪ ⚪ ⚪ ⚫ ⚪ ⚪ ⚪  | ⚪ ⚪ ⚪ ⚫ ⚪ ⚪ ⚪  | ⚪ ⚪ ⚪ ⚫ ⚪ ⚪ ⚪ 
-		 * ^      ^             ^      ^             ^      ^            ^      ^
+		 * ^          ^                    ^         ^                    ^         ^                    ^         ^
 		 * As shown, when "connect" is set to 4, there are 4 possible search areas
 		 */
 		int connect = 4;
