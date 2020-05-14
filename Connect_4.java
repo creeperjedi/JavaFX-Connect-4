@@ -418,9 +418,7 @@ public class Connect_4 extends Application {
 		 * that the game is set to connect 4 (this is controlled through the
 		 * "connect" variable)
 		 * === Diagram ===
-		 * ⚪ ⚪ ⚪ ⚫ ⚪ ⚪ ⚪
-		 * ^          ^- lastIndex (0)
-		 * ------------- firstIndex(-3)
+		 * ⚪ ⚪ ⚪ ⚫ ⚪ ⚪ ⚪	Leftmost ⚪ = firstIndex(-3)	⚫ = lastIndex (0)	
 		 * The numbers in parenthesis indicate the variable's value which represent how
 		 * many columns away they are from the last placed piece and form the borders
 		 * of the search area
@@ -428,8 +426,7 @@ public class Connect_4 extends Application {
 		 * A search area of 4 pieces long will be created and "checkIndex" will be set
 		 * to firstIndex to start. Every piece in this search area will be checked to see
 		 * if they are equal to the last piece placed.
-		 * ⚪ ⚪ ⚪ ⚫ ⚪ ⚪ ⚪  | ⚪ ⚪ ⚪ ⚫ ⚪ ⚪ ⚪  | ⚪ ⚪ ⚪ ⚫ ⚪ ⚪ ⚪  | ⚪ ⚪ ⚪ ⚫ ⚪ ⚪ ⚪ 
-		 * ^                               ^                              ^                              ^
+		 * <⚪>⚪ ⚪ ⚫ ⚪ ⚪ ⚪  | ⚪<⚪>⚪ ⚫ ⚪ ⚪ ⚪  | ⚪ ⚪<⚪>⚫ ⚪ ⚪ ⚪  | ⚪ ⚪ ⚪<⚫>⚪ ⚪ ⚪ 
 		 * The search area is the minimum 
 		 * number of pieces that must be equal or else the needed number of connections
 		 * ("connect") will not be met. Because of this fact, if any piece is not equal
@@ -438,8 +435,7 @@ public class Connect_4 extends Application {
 		 * search area goes past the right boundary of the board, a connection is found, 
 		 * or the maximum number of check areas have been searched. The maximum number 
 		 * of search areas is the same as the value of "connect".
-		 * ⚪ ⚪ ⚪ ⚫ ⚪ ⚪ ⚪  | ⚪ ⚪ ⚪ ⚫ ⚪ ⚪ ⚪  | ⚪ ⚪ ⚪ ⚫ ⚪ ⚪ ⚪  | ⚪ ⚪ ⚪ ⚫ ⚪ ⚪ ⚪ 
-		 * ^          ^                    ^         ^                    ^         ^                    ^         ^
+		 * :⚪ ⚪ ⚪ ⚫:⚪ ⚪ ⚪  | ⚪:⚪ ⚪ ⚫ ⚪:⚪ ⚪  | ⚪ ⚪:⚪ ⚫ ⚪ ⚪:⚪  | ⚪ ⚪ ⚪:⚫ ⚪ ⚪ ⚪: 
 		 * As shown, when "connect" is set to 4, there are 4 possible search areas
 		 */
 		int connect = 4;
