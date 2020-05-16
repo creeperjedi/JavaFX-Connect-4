@@ -163,7 +163,7 @@ public class Connect_4 extends Application {
             @Override public void changed(ObservableValue<? extends Number> observableValue, Number oldSceneHeight, Number newSceneHeight) {
                 System.out.println("Height: " + newSceneHeight);
                 resizedHeight = (double) newSceneHeight;
-                
+
         		/* Sets the Center for each GamePiece in each Column [this is calculated by
         		 * dividing the height of the window by the number of rows (to divide it into
         		 * even sections for each row) then by multiplying that by the quantity of
@@ -175,7 +175,7 @@ public class Connect_4 extends Application {
         	        for (GamePiece piece: column.getPieceArray()) {
         	            	piece.setCenterY(resizedHeight / rows * (piece.getRow() - 0.5));
         	        }
-        		}                
+        		}
             }
         });
         
@@ -338,9 +338,9 @@ public class Connect_4 extends Application {
 				if (recentCol-2 >= 0)
 					if (backBoard[recentRow][recentCol-2] == backBoard[recentRow][recentCol]
 							&& backBoard[recentRow][recentCol-1] == backBoard[recentRow][recentCol]) {
-						//Tries to place a piece to the Left of the row of 3: ▪️ ⚪ ⚪ ⚫ 
+						//Tries to place a piece to the Left of the row of 3: ▪️ ⚪ ⚪ ⚫
 						backBoardCalculator(-3);
-						//Tries to place a piece to the Right of the row of 3:   ⚪ ⚪ ⚫ ▪️ 
+						//Tries to place a piece to the Right of the row of 3:   ⚪ ⚪ ⚫ ▪️
 						if (placementChosen == false)
 							backBoardCalculator(+1);
 					}
@@ -348,9 +348,9 @@ public class Connect_4 extends Application {
 				if (recentCol+2 <= (columns - 1) && placementChosen == false)
 					if (backBoard[recentRow][recentCol+1] == backBoard[recentRow][recentCol]
 							&& backBoard[recentRow][recentCol+2] == backBoard[recentRow][recentCol]) {
-						//Tries to place a piece to the Right of the row of 3:   ⚫ ⚪ ⚪ ▪️ 
+						//Tries to place a piece to the Right of the row of 3:   ⚫ ⚪ ⚪ ▪️
 						backBoardCalculator(+3);
-						//Tries to place a piece to the Left of the row of 3: ▪️ ⚫ ⚪ ⚪ 
+						//Tries to place a piece to the Left of the row of 3: ▪️ ⚫ ⚪ ⚪
 						if (placementChosen == false)
 							backBoardCalculator(-1);
 					}
@@ -451,186 +451,80 @@ public class Connect_4 extends Application {
 		int checkIndex;
 		int searchAreaCycle;
 		int numberOfConnections;
-		//*Horizontal check* - Search area moves from left to right, checks from left to right
+		int currentWinDirection = 0;
+		int rowManipulation;
+		int columnManipulation;
+		String[] winDirections = {"horizontal", "vertical", "top left to bottom right", "bottom left to top right"};
 
-		firstIndex = (connect - 1) * -1; //-3 from the piece in connect 4
-		lastIndex = firstIndex + (connect - 1); //0 from the piece connect 4
-		searchAreaCycle = 1;
-		numberOfConnections = 0;
-		
-		//Checks if the last piece placed makes a winning connection horizontally
-		//Cycles through search areas until the maximum number of them has been reached
-		while (searchAreaCycle <= connect) {
-			//Checks the search area from left (firstIndex) to right
-			checkIndex = firstIndex;
-			//For every search area the numberOfConnections is set back to 0
+		while (currentWinDirection <= winDirections.length - 1) {
+			rowManipulation = 1;
+			columnManipulation = 1;
+			firstIndex = (connect - 1) * -1; //-3 from the piece in connect 4
+			lastIndex = firstIndex + (connect - 1); //0 from the piece connect 4
+			searchAreaCycle = 1;
 			numberOfConnections = 0;
-			/* Checks if the search area is not within the right bounds of the board and if so ends
-			 * searching because the search area moves to the right and once the search area is out
-			 * of bounds it will not return
-			 */
-			if (!isValidPlace(recentRow + lastIndex*0, recentCol + lastIndex)) {
-				break;
+			switch (winDirections[currentWinDirection]) {
+				case "horizontal":
+					rowManipulation = 0;
+					break;
+				case "vertical":
+					lastIndex = firstIndex * -1;
+					firstIndex = 0;
+					columnManipulation = 0;
+					break;
+				case "bottom left to top right":
+					rowManipulation = -1;
+					break;
 			}
-			//Checks if the search area is within the left bounds and if so checks the search area
-			if (isValidPlace(recentRow + firstIndex*0, recentCol + firstIndex)) {
-				//Checks every piece in the current search area
-				while (checkIndex <= lastIndex) {
-					/* Checks if the piece being checked if not the same and if so breaks (therefore exiting
-					 * the loop and causing the search area to shift), because there is no point to keep
-					 * checking the search area since it already isn't all the same
-					 */
-					if (backBoard[recentRow][recentCol + checkIndex] != backBoard[recentRow][recentCol]) {
-						break;
-					}
-					/* If the piece being checked is the same then that is recorded in numberOfConnections and
-					 * the loop continues until the whole search area is completed
-					 */
-					else {
-						numberOfConnections++;
-					}
-					//Increases checkIndex to check the next piece
-					checkIndex++;
-				}
-			}
-			if (numberOfConnections == connect) {
-				playerHasWon = true;
-				break;
-			}
-			//Increases the searchAreaCycle and shifts the search area to the right
-			searchAreaCycle++;
-			firstIndex++;
-			lastIndex++;
-		}
-		
-		//*Vertical check* - Search area does not move, checks from top to bottom
-		//Because the search area does not move some parts have been removed/changed
-		firstIndex = 0; //0 from the piece in connect 4
-		lastIndex = connect - 1; //3 from the piece connect 4
-		numberOfConnections = 0;
-		checkIndex = firstIndex;
 
-		if (isValidPlace(recentRow + lastIndex, recentCol + lastIndex*0) &&
-				isValidPlace(recentRow + firstIndex, recentCol + firstIndex*0)) {
-			while (checkIndex <= lastIndex) {
-				if (backBoard[recentRow + checkIndex][recentCol] != backBoard[recentRow][recentCol]) {
+			//Checks if the last piece placed makes a winning connection diagonally from the top left to the bottom right
+			//Cycles through search areas until the maximum number of them has been reached
+			while (searchAreaCycle <= connect) {
+				//Checks the search area from left (firstIndex) to right
+				checkIndex = firstIndex;
+				//For every search area the numberOfConnections is set back to 0
+				numberOfConnections = 0;
+				/* Checks if the search area is not within the right bounds of the board and if so ends
+				 * searching because the search area moves to the right and once the search area is out
+				 * of bounds it will not return
+				 */
+				if (!isValidPlace(recentRow + lastIndex*rowManipulation,
+						recentCol + lastIndex*columnManipulation)){
 					break;
 				}
-				else {
-					numberOfConnections++;
+				//Checks if the search area is within the left and top bounds and if so checks the search area
+				if (isValidPlace(recentRow + firstIndex*rowManipulation,
+						recentCol + firstIndex*columnManipulation)) {
+					//Checks every piece in the current search area
+					while (checkIndex <= lastIndex) {
+						/* Checks if the piece being checked if not the same and if so breaks (therefore exiting
+						 * the loop and causing the search area to shift), because there is no point to keep
+						 * checking the search area since it already isn't all the same
+						 */
+						if (backBoard[recentRow + checkIndex*rowManipulation][recentCol + checkIndex*columnManipulation] != backBoard[recentRow][recentCol]) {
+							break;
+						}
+						/* If the piece being checked is the same then that is recorded in numberOfConnections and
+						 * the loop continues until the whole search area is completed
+						 */
+						else {
+							numberOfConnections++;
+						}
+						//Increases checkIndex to check the next piece
+						checkIndex++;
+					}
 				}
-				checkIndex++;
-			}
-		}
-		if (numberOfConnections == connect) {
-			playerHasWon = true;
-		}
-		
-		//*L->R Diagonal check* - Search area moves from top left to the bottom right, checks from left to right
-		
-		firstIndex = (connect - 1) * -1; //-3 from the piece in connect 4
-		lastIndex = firstIndex + (connect - 1); //0 from the piece connect 4
-		searchAreaCycle = 1;
-		numberOfConnections = 0;
-		
-		//Checks if the last piece placed makes a winning connection diagonally from the top left to the bottom right
-		//Cycles through search areas until the maximum number of them has been reached
-		while (searchAreaCycle <= connect) {
-			//Checks the search area from left (firstIndex) to right
-			checkIndex = firstIndex;
-			//For every search area the numberOfConnections is set back to 0
-			numberOfConnections = 0;
-			/* Checks if the search area is not within the right bounds of the board and if so ends
-			 * searching because the search area moves to the right and once the search area is out
-			 * of bounds it will not return
-			 */
-			if (!isValidPlace(recentRow + lastIndex, recentCol + lastIndex)){
-				break;
-			}
-			//Checks if the search area is within the left and top bounds and if so checks the search area
-			if (isValidPlace(recentRow + firstIndex, recentCol + firstIndex)) {
-				//Checks every piece in the current search area
-				while (checkIndex <= lastIndex) {
-					/* Checks if the piece being checked if not the same and if so breaks (therefore exiting
-					 * the loop and causing the search area to shift), because there is no point to keep
-					 * checking the search area since it already isn't all the same
-					 */
-					if (backBoard[recentRow + checkIndex][recentCol + checkIndex] != backBoard[recentRow][recentCol]) {
-						break;
-					}
-					/* If the piece being checked is the same then that is recorded in numberOfConnections and
-					 * the loop continues until the whole search area is completed
-					 */
-					else {
-						numberOfConnections++;
-					}
-					//Increases checkIndex to check the next piece 
-					checkIndex++;
+				if (numberOfConnections == connect) {
+					System.out.println("Player has won by " + winDirections[currentWinDirection]);
+					playerHasWon = true;
+					break;
 				}
+				//Increases the searchAreaCycle and shifts the search area to the right
+				searchAreaCycle++;
+				firstIndex++;
+				lastIndex++;
 			}
-			if (numberOfConnections == connect) {
-				playerHasWon = true;
-				break;
-			}
-			//Increases the searchAreaCycle and shifts the search area to the right
-			searchAreaCycle++;
-			firstIndex++;
-			lastIndex++;
-		}
-
-
-
-
-		//*BL->TR Diagonal check* - Search area moves from top right to the bottom left, checks from left to right
-
-		firstIndex = (connect - 1) * -1; //-3 from the piece in connect 4
-		lastIndex = firstIndex + (connect - 1); //0 from the piece connect 4
-		searchAreaCycle = 1;
-		numberOfConnections = 0;
-
-		//Checks if the last piece placed makes a winning connection diagonally from the top left to the bottom right
-		//Cycles through search areas until the maximum number of them has been reached
-		while (searchAreaCycle <= connect) {
-			//Checks the search area from left (firstIndex) to right
-			checkIndex = firstIndex;
-			//For every search area the numberOfConnections is set back to 0
-			numberOfConnections = 0;
-			/* Checks if the search area is not within the right bounds of the board and if so ends
-			 * searching because the search area moves to the right and once the search area is out
-			 * of bounds it will not return
-			 */
-			if (!isValidPlace(recentRow + lastIndex*-1, recentCol + lastIndex)){
-				break;
-			}
-			//Checks if the search area is within the left and top bounds and if so checks the search area
-			if (isValidPlace(recentRow + firstIndex*-1, recentCol + firstIndex)) {
-				//Checks every piece in the current search area
-				while (checkIndex <= lastIndex) {
-					/* Checks if the piece being checked if not the same and if so breaks (therefore exiting
-					 * the loop and causing the search area to shift), because there is no point to keep
-					 * checking the search area since it already isn't all the same
-					 */
-					if (backBoard[recentRow + checkIndex*-1][recentCol + checkIndex] != backBoard[recentRow][recentCol]) {
-						break;
-					}
-					/* If the piece being checked is the same then that is recorded in numberOfConnections and
-					 * the loop continues until the whole search area is completed
-					 */
-					else {
-						numberOfConnections++;
-					}
-					//Increases checkIndex to check the next piece
-					checkIndex++;
-				}
-			}
-			if (numberOfConnections == connect) {
-				playerHasWon = true;
-				break;
-			}
-			//Increases the searchAreaCycle and shifts the search area to the right
-			searchAreaCycle++;
-			firstIndex++;
-			lastIndex++;
+			currentWinDirection++;
 		}
 
 		if (playerHasWon) {
