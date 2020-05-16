@@ -469,11 +469,11 @@ public class Connect_4 extends Application {
 			 * searching because the search area moves to the right and once the search area is out
 			 * of bounds it will not return
 			 */
-			if (!(recentCol + lastIndex <= backBoard[0].length - 1)) {
+			if (!isValidPlace(recentRow + lastIndex*0, recentCol + lastIndex)) {
 				break;
 			}
 			//Checks if the search area is within the left bounds and if so checks the search area
-			if (recentCol + firstIndex >= 0) {
+			if (isValidPlace(recentRow + firstIndex*0, recentCol + firstIndex)) {
 				//Checks every piece in the current search area
 				while (checkIndex <= lastIndex) {
 					/* Checks if the piece being checked if not the same and if so breaks (therefore exiting
@@ -510,7 +510,8 @@ public class Connect_4 extends Application {
 		numberOfConnections = 0;
 		checkIndex = firstIndex;
 
-		if ((recentRow + lastIndex <= backBoard.length - 1) && (recentRow + firstIndex >= 0)) {
+		if (isValidPlace(recentRow + lastIndex, recentCol + lastIndex*0) &&
+				isValidPlace(recentRow + firstIndex, recentCol + firstIndex*0)) {
 			while (checkIndex <= lastIndex) {
 				if (backBoard[recentRow + checkIndex][recentCol] != backBoard[recentRow][recentCol]) {
 					break;
@@ -543,14 +544,11 @@ public class Connect_4 extends Application {
 			 * searching because the search area moves to the right and once the search area is out
 			 * of bounds it will not return
 			 */
-			if (!(recentCol + lastIndex <= backBoard[0].length - 1)) {
-				break;
-			}
-			if (!(recentRow + lastIndex <= backBoard.length - 1)) {
+			if (!isValidPlace(recentRow + lastIndex, recentCol + lastIndex)){
 				break;
 			}
 			//Checks if the search area is within the left and top bounds and if so checks the search area
-			if (recentCol + firstIndex >= 0 && recentRow + firstIndex >= 0) {
+			if (isValidPlace(recentRow + firstIndex, recentCol + firstIndex)) {
 				//Checks every piece in the current search area
 				while (checkIndex <= lastIndex) {
 					/* Checks if the piece being checked if not the same and if so breaks (therefore exiting
