@@ -36,7 +36,7 @@ public class Connect_4 extends Application {
     
     AudioClip gameEnd = new AudioClip(this.getClass().getResource("/res/gameOver.wav").toString());
     AudioClip backgroundMusic = new AudioClip(this.getClass().getResource("/res/backgroundMusic.mp3").toString());
-    
+
     String winner;
 	double windowHeight;
 	double windowWidth;
@@ -397,7 +397,14 @@ public class Connect_4 extends Application {
 						placementChosen = true;
 				}
 	}
-	
+
+	public boolean isValidPlace(int row, int column) {
+		if ((row >= 0) && (row <= backBoard.length - 1) && (column >= 0) && (column <= backBoard[0].length - 1)) {
+			return true;
+		}
+		return false;
+	}
+
 	public void checkWinMethod() {
 		if (piecesOnBoard == (rows * columns)) {
 			winner = "It's a Tie!";
@@ -407,7 +414,7 @@ public class Connect_4 extends Application {
 			winner = "Yellow Wins!";
 		else
 			winner = "Red Wins!";
-		
+
 		/* ========== How wins are checked ==========
 		 * Wins are checked by establishing a 'search area' and checking if every piece
 		 * in that area is equal to the piece just placed. While very complicated, it 
@@ -482,7 +489,7 @@ public class Connect_4 extends Application {
 					else {
 						numberOfConnections++;
 					}
-					//Increases checkIndex to check the next piece 
+					//Increases checkIndex to check the next piece
 					checkIndex++;
 				}
 			}
@@ -571,33 +578,63 @@ public class Connect_4 extends Application {
 			searchAreaCycle++;
 			firstIndex++;
 			lastIndex++;
-		}		
-		
-		//Checks if the last piece's color is equal to the ...
-		//3 to the bottom Left
-		if (recentCol-3 >= 0 && recentRow+3 <= (rows - 1))
-			if (backBoard[recentRow+1][recentCol-1] == backBoard[recentRow][recentCol]
-					&& backBoard[recentRow+2][recentCol-2] == backBoard[recentRow][recentCol]
-					&& backBoard[recentRow+3][recentCol-3] == backBoard[recentRow][recentCol])
+		}
+
+
+
+
+		//*BL->TR Diagonal check* - Search area moves from top right to the bottom left, checks from left to right
+
+		firstIndex = (connect - 1) * -1; //-3 from the piece in connect 4
+		lastIndex = firstIndex + (connect - 1); //0 from the piece connect 4
+		searchAreaCycle = 1;
+		numberOfConnections = 0;
+
+		//Checks if the last piece placed makes a winning connection diagonally from the top left to the bottom right
+		//Cycles through search areas until the maximum number of them has been reached
+		while (searchAreaCycle <= connect) {
+			//Checks the search area from left (firstIndex) to right
+			checkIndex = firstIndex;
+			//For every search area the numberOfConnections is set back to 0
+			numberOfConnections = 0;
+			/* Checks if the search area is not within the right bounds of the board and if so ends
+			 * searching because the search area moves to the right and once the search area is out
+			 * of bounds it will not return
+			 */
+			if (!isValidPlace(recentRow + lastIndex*-1, recentCol + lastIndex)){
+				break;
+			}
+			//Checks if the search area is within the left and top bounds and if so checks the search area
+			if (isValidPlace(recentRow + firstIndex*-1, recentCol + firstIndex)) {
+				//Checks every piece in the current search area
+				while (checkIndex <= lastIndex) {
+					/* Checks if the piece being checked if not the same and if so breaks (therefore exiting
+					 * the loop and causing the search area to shift), because there is no point to keep
+					 * checking the search area since it already isn't all the same
+					 */
+					if (backBoard[recentRow + checkIndex*-1][recentCol + checkIndex] != backBoard[recentRow][recentCol]) {
+						break;
+					}
+					/* If the piece being checked is the same then that is recorded in numberOfConnections and
+					 * the loop continues until the whole search area is completed
+					 */
+					else {
+						numberOfConnections++;
+					}
+					//Increases checkIndex to check the next piece
+					checkIndex++;
+				}
+			}
+			if (numberOfConnections == connect) {
 				playerHasWon = true;
-		//2 to the bottom Left and 1 to the top Right
-		if (recentCol - 2 >= 0 && recentRow + 2 <= (rows - 1) && recentCol + 1 <= (columns - 1) && recentRow - 1 >= 0)
-			if (backBoard[recentRow-1][recentCol+1] == backBoard[recentRow][recentCol]
-					&& backBoard[recentRow+1][recentCol-1] == backBoard[recentRow][recentCol]
-					&& backBoard[recentRow+2][recentCol-2] == backBoard[recentRow][recentCol])
-				playerHasWon = true;
-		//1 to the bottom Left and 2 to the top Right
-		if (recentCol - 1 >= 0 && recentRow + 1 <= (rows - 1) && recentCol + 2 <= (columns - 1) && recentRow - 2 >= 0)
-			if (backBoard[recentRow-2][recentCol+2] == backBoard[recentRow][recentCol]
-					&& backBoard[recentRow-1][recentCol+1] == backBoard[recentRow][recentCol]
-					&& backBoard[recentRow+1][recentCol-1] == backBoard[recentRow][recentCol])
-				playerHasWon = true;
-		//3 to the top Right
-		if (recentCol + 3 <= (columns - 1) && recentRow - 3 >= 0)
-			if (backBoard[recentRow-3][recentCol+3] == backBoard[recentRow][recentCol]
-					&& backBoard[recentRow-2][recentCol+2] == backBoard[recentRow][recentCol]
-					&& backBoard[recentRow-1][recentCol+1] == backBoard[recentRow][recentCol])
-				playerHasWon = true;
+				break;
+			}
+			//Increases the searchAreaCycle and shifts the search area to the right
+			searchAreaCycle++;
+			firstIndex++;
+			lastIndex++;
+		}
+
 		if (playerHasWon) {
 			backgroundMusic.stop();
 			gameEnd.play();
