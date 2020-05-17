@@ -7,6 +7,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
+import javafx.scene.control.TextField;
+import javafx.scene.control.TextFormatter;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
@@ -29,8 +31,10 @@ public class Connect_4 extends Application {
     ToggleGroup difficulty;
     RadioButton randomDifficulty;
     RadioButton basicDifficulty;
-    
-    Label topLabel = new Label("Welcome to JavaFX Connect-4"); 
+
+	TextField connectField = new TextField("4");
+
+    Label topLabel = new Label("Welcome to JavaFX Connect-4");
     
     ArrayList<Column> columnArray = new ArrayList<Column>();
     
@@ -119,6 +123,12 @@ public class Connect_4 extends Application {
         randomDifficulty.setSelected(true);
         basicDifficulty = new RadioButton("Basic");
         basicDifficulty.setToggleGroup(difficulty);
+
+        Label connectLabel = new Label("Connect:");
+
+        //Makes connectField only accept integers (Ripped this from Stack Overflow. It works, I don't question it.)
+       	connectField.setTextFormatter(new TextFormatter<>(change ->
+				(change.getControlNewText().matches("([1-9][0-9]*)?")) ? change : null));
         
         Button viewCredits = new Button("View credits");
         viewCredits.setOnAction(e -> {
@@ -195,15 +205,17 @@ public class Connect_4 extends Application {
         GridPane.setConstraints(pickDifficulty, 1, 9);
         GridPane.setConstraints(randomDifficulty, 3, 9);
         GridPane.setConstraints(basicDifficulty, 3, 11);
-        GridPane.setConstraints(viewCredits, 1, 13, 3, 1);
+        GridPane.setConstraints(connectLabel, 1, 13);
+        GridPane.setConstraints(connectField, 3, 13);
+        GridPane.setConstraints(viewCredits, 1, 15, 3, 1);
         GridPane.setFillWidth(viewCredits, true);
         viewCredits.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
         grid.getChildren().addAll(topLabel, pickOponent, startGameHuman, startGameComputer,
-        		pickDifficulty, randomDifficulty, basicDifficulty, viewCredits);
+        		pickDifficulty, randomDifficulty, basicDifficulty, connectLabel, connectField, viewCredits);
         	
         //Main Menu Display
     	window.setTitle("JavaFX Connect 4");
-        mainMenu = new Scene(grid, 300, 250);
+        mainMenu = new Scene(grid, 350, 300);
         window.setScene(mainMenu);  
         window.show();
         window.centerOnScreen();
@@ -445,7 +457,7 @@ public class Connect_4 extends Application {
 		 * :⚪ ⚪ ⚪ ⚫:⚪ ⚪ ⚪  | ⚪:⚪ ⚪ ⚫ ⚪:⚪ ⚪  | ⚪ ⚪:⚪ ⚫ ⚪ ⚪:⚪  | ⚪ ⚪ ⚪:⚫ ⚪ ⚪ ⚪: 
 		 * As shown, when "connect" is set to 4, there are 4 possible search areas
 		 */
-		int connect = 4;
+		int connect = (Integer.parseInt(connectField.getText()));
 		int firstIndex;
 		int lastIndex;
 		int checkIndex;
