@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 
 public class Column {
-	private ArrayList<GamePiece> pieceArray = new ArrayList<GamePiece> ();
+	private ArrayList<GamePiece> pieceArray = new ArrayList<> ();
 	private double rightBorder;
 	private double centerX;
 	private int columnNumber;
@@ -13,7 +13,7 @@ public class Column {
 	}
 	
 	//All previous columns must be of equal size for centerX to correct
-	public void setBorder(double borderValue) {
+	public void setRightBorder(double borderValue) {
 		rightBorder = borderValue;
 	}
 	
@@ -33,7 +33,7 @@ public class Column {
 		return pieceArray;
 	}
 	
-	public double getBorder() {
+	public double getRightBorder() {
 		return rightBorder;
 	}
 	

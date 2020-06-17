@@ -1,6 +1,4 @@
 import javafx.application.Application;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -22,11 +20,11 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class Connect_4 extends Application {	
-	//JavaFX Hierarchy: Stage -> Scene -> (Grid)Pane
+	//JavaFX Hierarchy: Stage -> Scene -> (Grid)Pane. In layman's terms: window -> contents -> layout
     Stage window;
-    Scene mainMenu, gameScreen;
+    Scene mainMenu, gameboardScene;
     
-    Pane boardPane = new Pane();
+    Pane gameboardPane = new Pane();
     
     ToggleGroup difficulty;
     RadioButton randomDifficulty;
@@ -36,7 +34,7 @@ public class Connect_4 extends Application {
 
     Label topLabel = new Label("Welcome to JavaFX Connect-4");
     
-    ArrayList<Column> columnArray = new ArrayList<Column>();
+    ArrayList<Column> columnArray = new ArrayList<>();
     
     AudioClip gameEnd = new AudioClip(this.getClass().getResource("/res/gameOver.wav").toString());
     AudioClip backgroundMusic = new AudioClip(this.getClass().getResource("/res/backgroundMusic.mp3").toString());
@@ -71,15 +69,17 @@ public class Connect_4 extends Application {
     @Override
     public void start(Stage primaryStage) {
     	window = primaryStage;
-    	//Assigns the boardPane Pane to the gameScreen Scene
-        gameScreen = new Scene(boardPane);
-        boardPane.setBackground(new Background(new BackgroundFill(Color.rgb(30, 143, 255), CornerRadii.EMPTY, Insets.EMPTY)));
-        
-        windowHeight = window.getHeight();
-        windowWidth = window.getWidth();
-        
-		//Triggers the humanInputMethod() and prints the X and Y coordinate for every mouse click on the board
-        boardPane.setOnMouseClicked(e -> {
+
+		//==========Game Screen==========
+
+    	//Assigns gameboardPane to gameboardScene
+        gameboardScene = new Scene(gameboardPane);
+        gameboardPane.setBackground(new Background(new BackgroundFill(Color.rgb(30, 143, 255),
+				CornerRadii.EMPTY, Insets.EMPTY)));
+
+		//Assigns the setOnMouseClicked listener to gameboardPane.
+        gameboardPane.setOnMouseClicked(e -> {
+        	//Collects the X and Y position of the click and prints them
     	    xMouse=(int) e.getX();
     	    yMouse=(int) e.getY();
     	    System.out.println(xMouse+","+yMouse);//these co-ords are relative to the component
@@ -90,7 +90,7 @@ public class Connect_4 extends Application {
 	    	    previousCol = recentCol;
 	    	    humanInputMethod();
 	    	    checkWinMethod();
-	    	    if (prepareRestart == false && againstComputer) {
+	    	    if (!prepareRestart && againstComputer) {
 	    			if (previousRow != recentRow || previousCol != recentCol) {
 	    				computerInputMethod();	
 	    	    	    checkWinMethod();
@@ -98,96 +98,89 @@ public class Connect_4 extends Application {
 	    	    }
     	    }
         });
-
-        backgroundMusic.setCycleCount(AudioClip.INDEFINITE);
         
-    	//**Main Menu**
-        Label pickOponent = new Label("Pick your opponent");
-        
-        Label pickDifficulty = new Label("Computer difficulty:");
-        
-        //Checks for mouse click on the button and starts the game
-        Button startGameHuman = new Button("Another human");
-        startGameHuman.setOnAction(e -> {
-        	startGameMethod();
-        	});
-        Button startGameComputer = new Button("The computer");
-        startGameComputer.setOnAction(e -> {
-        	againstComputer = true;
-        	startGameMethod();
-        	});
-        
-        difficulty = new ToggleGroup();
-        randomDifficulty = new RadioButton("Random");
-        randomDifficulty.setToggleGroup(difficulty);
-        randomDifficulty.setSelected(true);
-        basicDifficulty = new RadioButton("Basic");
-        basicDifficulty.setToggleGroup(difficulty);
-
-        Label connectLabel = new Label("Connect:");
-
-        //Makes connectField only accept integers (Ripped this from Stack Overflow. It works, I don't question it.)
-       	connectField.setTextFormatter(new TextFormatter<>(change ->
-				(change.getControlNewText().matches("([1-9][0-9]*)?")) ? change : null));
-        
-        Button viewCredits = new Button("View credits");
-        viewCredits.setOnAction(e -> {
-        	CreditsWindow.display();
-        	});
-        
-        /* Listens for changes in the dimensions of the Scene, and resizes the boardOverlay accordingly
-         * Also repositions the Circles so that they stay in their respective positions
+        /* Adds two Listeners, widthProperty and heightProperty, that are triggered during changes in the dimensions of
+         * gameboardScene. When triggered, the GamePieces will be repositioned and resized
          */
-        gameScreen.widthProperty().addListener(new ChangeListener<Number>() {
-            @Override public void changed(ObservableValue<? extends Number> observableValue, Number oldSceneWidth, Number newSceneWidth) {
-                System.out.println("Width: " + newSceneWidth);
-                resizedWidth = (double) newSceneWidth;
-                
-                //Sets the rightBorder for each Column
-                for (Column column : columnArray) {
-                	column.setBorder(resizedWidth / columns * column.getColumnNumber());
-                }
-        		
-        		/* Sets the Center for each Column [this is calculated by dividing the width of
-        		 * the window by the number of columns (to divide it into even sections for each
-        		 * Column) then by multiplying that by the quantity of Column's column number - 0.5
-        		 * (to set the center of the column in the middle of the column since multiplying
-        		 * only by the Column's number would equal its border instead of its center)]
-        		 */
-                for (Column column : columnArray) {
-                	column.setCenter(resizedWidth / columns * (column.getColumnNumber() - 0.5));
-                }
-        		
-        		double circleRadius = columnArray.get(0).getBorder() / 2;
-        		
-        		//Sets the CenterX and Radius for each GamePiece in each Column
-        		for (Column column: columnArray) {
-        			for (GamePiece piece: column.getPieceArray()) {
-            			piece.setCenterX(column.getCenter());
-            			piece.setRadius(circleRadius);
-        			}
-        		}    		
-            }
-        });
-        gameScreen.heightProperty().addListener(new ChangeListener<Number>() {
-            @Override public void changed(ObservableValue<? extends Number> observableValue, Number oldSceneHeight, Number newSceneHeight) {
-                System.out.println("Height: " + newSceneHeight);
-                resizedHeight = (double) newSceneHeight;
+        gameboardScene.widthProperty().addListener((observableValue, oldSceneWidth, newSceneWidth) -> {
+			System.out.println("Width: " + newSceneWidth);
+			resizedWidth = (double) newSceneWidth;
 
-        		/* Sets the Center for each GamePiece in each Column [this is calculated by
-        		 * dividing the height of the window by the number of rows (to divide it into
-        		 * even sections for each row) then by multiplying that by the quantity of
-        		 * GamePiece's column number - 0.5 (to set the center of the GamePiece in the
-        		 * middle of the row since multiplying only by the GamePiece's row would equal
-        		 * the row's border instead of its center)]
-        		 */
-        		for (Column column: columnArray) {
-        	        for (GamePiece piece: column.getPieceArray()) {
-        	            	piece.setCenterY(resizedHeight / rows * (piece.getRow() - 0.5));
-        	        }
-        		}
-            }
-        });
+			//Sets the rightBorder for each Column
+			for (Column column : columnArray) {
+				column.setRightBorder(resizedWidth / columns * column.getColumnNumber());
+			}
+
+			/* Sets the Center for each Column [this is calculated by dividing the width of
+			 * the window by the number of columns (to divide it into even sections for each
+			 * Column) then by multiplying that by the quantity of Column's column number - 0.5
+			 * (to set the center of the column in the middle of the column since multiplying
+			 * only by the Column's number would equal its border instead of its center)]
+			 */
+			for (Column column : columnArray) {
+				column.setCenter(resizedWidth / columns * (column.getColumnNumber() - 0.5));
+			}
+
+			double circleRadius = columnArray.get(0).getRightBorder() / 2;
+
+			//Sets the CenterX and Radius for each GamePiece in each Column
+			for (Column column: columnArray) {
+				for (GamePiece piece: column.getPieceArray()) {
+					piece.setCenterX(column.getCenter());
+					piece.setRadius(circleRadius);
+				}
+			}
+		});
+        gameboardScene.heightProperty().addListener((observableValue, oldSceneHeight, newSceneHeight) -> {
+			System.out.println("Height: " + newSceneHeight);
+			resizedHeight = (double) newSceneHeight;
+
+			/* Sets the Center for each GamePiece in each Column [this is calculated by
+			 * dividing the height of the window by the number of rows (to divide it into
+			 * even sections for each row) then by multiplying that by the quantity of
+			 * GamePiece's column number - 0.5 (to set the center of the GamePiece in the
+			 * middle of the row since multiplying only by the GamePiece's row would equal
+			 * the row's border instead of its center)]
+			 */
+			for (Column column: columnArray) {
+				for (GamePiece piece: column.getPieceArray()) {
+						piece.setCenterY(resizedHeight / rows * (piece.getRow() - 0.5));
+				}
+			}
+		});
+
+		//==========Main Menu==========
+
+		Label pickOpponent = new Label("Pick your opponent");
+
+		Label pickDifficulty = new Label("Computer difficulty:");
+
+		//Checks if the button is pressed and if so calls startGameMethod
+		Button startGameHuman = new Button("Another human");
+		startGameHuman.setOnAction(e -> startGameMethod());
+
+		Button startGameComputer = new Button("The computer");
+		startGameComputer.setOnAction(e -> {
+			againstComputer = true;
+			startGameMethod();
+		});
+
+		difficulty = new ToggleGroup();
+		randomDifficulty = new RadioButton("Random");
+		randomDifficulty.setToggleGroup(difficulty);
+		randomDifficulty.setSelected(true);
+		basicDifficulty = new RadioButton("Basic");
+		basicDifficulty.setToggleGroup(difficulty);
+
+		Label connectLabel = new Label("Connect:");
+
+		//Makes connectField only accept integers (Ripped this from Stack Overflow. It works, I don't question it.)
+		connectField.setTextFormatter(new TextFormatter<>(change ->
+				(change.getControlNewText().matches("([1-9][0-9]*)?")) ? change : null));
+		connectField.setPrefWidth(80);
+
+		Button viewCredits = new Button("View credits");
+		viewCredits.setOnAction(e -> CreditsWindow.display());
         
         GridPane grid = new GridPane();
         grid.setPadding(new Insets(10, 10, 10, 10));
@@ -196,8 +189,8 @@ public class Connect_4 extends Application {
         
         //Add Main Menu Objects to GridPane
         GridPane.setConstraints(topLabel, 1, 1, 3, 1);
-        GridPane.setConstraints(pickOponent, 1, 6, 3, 1);
-        GridPane.setHalignment(pickOponent, HPos.CENTER);
+        GridPane.setConstraints(pickOpponent, 1, 6, 3, 1);
+        GridPane.setHalignment(pickOpponent, HPos.CENTER);
         
         GridPane.setConstraints(startGameHuman, 1, 7);
         GridPane.setConstraints(startGameComputer, 3, 7);
@@ -210,7 +203,7 @@ public class Connect_4 extends Application {
         GridPane.setConstraints(viewCredits, 1, 15, 3, 1);
         GridPane.setFillWidth(viewCredits, true);
         viewCredits.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
-        grid.getChildren().addAll(topLabel, pickOponent, startGameHuman, startGameComputer,
+        grid.getChildren().addAll(topLabel, pickOpponent, startGameHuman, startGameComputer,
         		pickDifficulty, randomDifficulty, basicDifficulty, connectLabel, connectField, viewCredits);
         	
         //Main Menu Display
@@ -222,7 +215,7 @@ public class Connect_4 extends Application {
     }
     
     public void startGameMethod() {
-    	if (firstGame) {	    	
+    	if (firstGame) {
     	    //Creates the 2d-array that will be used to check for game wins
     	    /* Organized like a traditional co-ordinate plane with an inverted y-axis
     	     * 0, 1, 2, 3, 4, 5, 6 < [][columns] 
@@ -259,41 +252,59 @@ public class Connect_4 extends Application {
 	         * F1, F2, F3, F4, F5, F6, F7
 	         */
 	    	
-	    	/* Adds each GamePiece from each Column to the game board (boardPane)
+	    	/* Adds each GamePiece from each Column to the game board (gameboardPane)
 	    	 * and sets their color to white to represent empty spaces on the board
 	    	 */
 			for (Column column: columnArray) {
 		        for (GamePiece piece: column.getPieceArray()) {
+		        	//The pieces are scaled down to give space between them
 		        	piece.setScaleX(0.80);
 		        	piece.setScaleY(0.80);
 		        	piece.setFill(Color.WHITE);
-		        	boardPane.getChildren().add(piece);
+		        	gameboardPane.getChildren().add(piece);
 		        }
 		    }
 	    	firstGame = false;
     	}
-    	System.out.println(backBoard.length);
-    	System.out.println(backBoard[0].length);
-    	//Saves the dimensions of the mainMenu window and sets the Scene to gameScreen
+    	System.out.println(backBoard.length + " Rows");
+    	System.out.println(backBoard[0].length + " Columns");
+    	//Saves the dimensions of the mainMenu window
+		windowWidth = window.getWidth();
         windowHeight = window.getHeight();
-        windowWidth = window.getWidth();
-        window.setScene(gameScreen);
-        
-        /* Applies the saved dimensions to the new window to keep the sizes consistent
-         * Adds or subtracts to trigger the Listener so that the boardOverlay can be properly sized
-         * Alternates between adding or subtracting every round to prevent compounding changes in the size of the board
-         */
-        if (completedGames % 2 == 0) {
-            window.setWidth(windowWidth + 1);
-            window.setHeight(windowHeight + 1);
-        }
-        else {
-            window.setWidth(windowWidth - 1);
-            window.setHeight(windowHeight - 1);
-        }
-        
+        //Sets the Scene to gameboardScene
+        window.setScene(gameboardScene);
+
+		/* This code is required to prevent problems with scaling, such as instances with high DPI displays. If the
+		 * scaling is set to 100% then this issue would not be present either way.
+		 *
+		 * Description of the issue: On all games after the first, the pieces will not be displayed correctly for the
+		 * size of the window but will instead be sized and positioned for a window larger or smaller according to the
+		 * scaling set. For example, if the scaling is set to 150% percent then the pieces will be arranged as if the
+		 * window was a size 150% of what is actually is. This is because the scene is scaling itself on top of
+		 * the scaling that the window itself did when the program started.
+		 * While the Scene is still scaled at the start of the first game, it is not effected by this issue is because
+		 * when the window's width and height are set (using .setWidth and .setHeight) the Scene's width and height are
+		 * changed and its Listeners are triggered, resulting in the scaling and repositioning of the pieces to where
+		 * they should be. On subsequent games, when the window's width and height are set, the Scene is not resized
+		 * (idk why it works once but not again, I'm probably missing something). This results in the window being the
+		 * same size but the Scene being the scaled size, ex. 150% of what is originally was, and its contents spilling
+		 * over past the edge of the window.
+		 *
+		 * To solve this issue, the window is set to the size of the Scene (using .sizeToScene) but then immediately
+		 * sized back to what it originally was, resizing the Scene and triggering the Listeners to correctly scale and
+		 * position the pieces on the board.
+		 *
+		 * Note: To see this issue yourself, set your scaling to something other than 100% and comment out the
+		 * "window.seizeToScene()" line.
+		 */
+		window.sizeToScene();
+		//Applies the saved dimensions to keep the window sizes consistent between the main menu and the game board
+		window.setWidth(windowWidth);
+		window.setHeight(windowHeight);
+
+		backgroundMusic.setCycleCount(AudioClip.INDEFINITE);
         backgroundMusic.play();
-        
+
     	window.centerOnScreen();
     }
 
@@ -309,8 +320,8 @@ public class Connect_4 extends Application {
 			currentChar = 'R';
 		}
 		
-		/* Checks if the x coordinate of the last click, xMouse, is inside of first column [this is tested by checking if
-		 * xMouse is less than (to the left of) the right border of the column (retrieved by using .getBorder)]
+		/* Checks if the x coordinate of the last click, xMouse, is inside of first column [this is tested by checking
+		 * if xMouse is less than (to the left of) the right border of the column (retrieved by using .getBorder)]
 		 * 
 		 * If it is then it will check each piece starting from the bottom until it finds one that has not been placed
 		 * 
@@ -318,7 +329,7 @@ public class Connect_4 extends Application {
 		 * column and so on until there are no columns left
 		 */
 		for (Column column: columnArray) {
-			if (xMouse <= column.getBorder() && column.getPieces() < rows) {
+			if (xMouse <= column.getRightBorder() && column.getPieces() < rows) {
 	        	for (GamePiece piece: column.getPieceArray()) {
 	            	if (piece.getFill().equals(Color.WHITE)) {
 	            		piece.setFill(currentColor);
@@ -341,52 +352,52 @@ public class Connect_4 extends Application {
 	
 	public void computerInputMethod() {
 		Random rand = new Random();
-		while (true) {
-			if (basicDifficulty.isSelected() == true) {
+		do {
+			if (basicDifficulty.isSelected()) {
 				placementChosen = false;
 				System.out.println("Checks have begun");
 				//Checks if the last piece's color is equal to the ...
 				//2 to the Left
-				if (recentCol-2 >= 0)
-					if (backBoard[recentRow][recentCol-2] == backBoard[recentRow][recentCol]
-							&& backBoard[recentRow][recentCol-1] == backBoard[recentRow][recentCol]) {
-						//Tries to place a piece to the Left of the row of 3: ▪️ ⚪ ⚪ ⚫
+				if (recentCol - 2 >= 0)
+					if (backBoard[recentRow][recentCol - 2] == backBoard[recentRow][recentCol]
+							&& backBoard[recentRow][recentCol - 1] == backBoard[recentRow][recentCol]) {
+						//Tries to place a piece to the Left of the row of 3: ▪ ⚪ ⚪ ⚫
 						backBoardCalculator(-3);
-						//Tries to place a piece to the Right of the row of 3:   ⚪ ⚪ ⚫ ▪️
-						if (placementChosen == false)
+						//Tries to place a piece to the Right of the row of 3: ⚪ ⚪ ⚫ ▪️
+						if (!placementChosen)
 							backBoardCalculator(+1);
 					}
 				//2 to the Right
-				if (recentCol+2 <= (columns - 1) && placementChosen == false)
-					if (backBoard[recentRow][recentCol+1] == backBoard[recentRow][recentCol]
-							&& backBoard[recentRow][recentCol+2] == backBoard[recentRow][recentCol]) {
-						//Tries to place a piece to the Right of the row of 3:   ⚫ ⚪ ⚪ ▪️
+				if (recentCol + 2 <= (columns - 1) && !placementChosen)
+					if (backBoard[recentRow][recentCol + 1] == backBoard[recentRow][recentCol]
+							&& backBoard[recentRow][recentCol + 2] == backBoard[recentRow][recentCol]) {
+						//Tries to place a piece to the Right of the row of 3: ⚫ ⚪ ⚪ ▪️
 						backBoardCalculator(+3);
-						//Tries to place a piece to the Left of the row of 3: ▪️ ⚫ ⚪ ⚪
-						if (placementChosen == false)
+						//Tries to place a piece to the Left of the row of 3: ▪ ⚫ ⚪ ⚪
+						if (!placementChosen)
 							backBoardCalculator(-1);
 					}
 				//2 Down
-				if (recentRow+2 <= (rows - 1) && placementChosen == false)
-					if (backBoard[recentRow+1][recentCol] == backBoard[recentRow][recentCol]
-							&& backBoard[recentRow+2][recentCol] == backBoard[recentRow][recentCol]) {
+				if (recentRow + 2 <= (rows - 1) && !placementChosen)
+					if (backBoard[recentRow + 1][recentCol] == backBoard[recentRow][recentCol]
+							&& backBoard[recentRow + 2][recentCol] == backBoard[recentRow][recentCol]) {
 						placementChosen = true;
 					}
 				System.out.println("Choice made: " + placementChosen);
 			}
 			if (!placementChosen) {
-				xMouse = rand.nextInt((int) columnArray.get(columnArray.size()-1).getBorder());
+				/* The limit for the Random is set to the right border of the last column, ensuring that it will be
+				 * within the bounds of the board since the minimum is 0
+				 */
+				xMouse = rand.nextInt((int) columnArray.get(columnArray.size() - 1).getRightBorder());
 			}
-    	    previousRow = recentRow;
-    	    previousCol = recentCol;
-    	    /* The computer places pieces by manipulating the xMouse value to select a column and then
-    	     * calls the humnanInputMethod() to mimic the process of a mouse click on that column
-    	     */
-    	    humanInputMethod();
-    		if (previousRow != recentRow || previousCol != recentCol) {
-    				break;
-    		}
-		}
+			previousRow = recentRow;
+			previousCol = recentCol;
+			/* The computer places pieces by manipulating the xMouse value to select a column and then
+			 * calls the humanInputMethod() to mimic the process of a mouse click on that column
+			 */
+			humanInputMethod();
+		} while (previousRow == recentRow && previousCol == recentCol);
 	}
 
 	/* Checks if the space "distance" columns away from recentCol and on the same row as recentRow
@@ -410,11 +421,9 @@ public class Connect_4 extends Application {
 				}
 	}
 
+	//Returns true if the requested row and column pair is a valid location on the board
 	public boolean isValidPlace(int row, int column) {
-		if ((row >= 0) && (row <= backBoard.length - 1) && (column >= 0) && (column <= backBoard[0].length - 1)) {
-			return true;
-		}
-		return false;
+		return (row >= 0) && (row <= backBoard.length - 1) && (column >= 0) && (column <= backBoard[0].length - 1);
 	}
 
 	public void checkWinMethod() {
@@ -474,7 +483,6 @@ public class Connect_4 extends Application {
 			firstIndex = (connect - 1) * -1; //-3 from the piece in connect 4
 			lastIndex = firstIndex + (connect - 1); //0 from the piece connect 4
 			searchAreaCycle = 1;
-			numberOfConnections = 0;
 			switch (winDirections[currentWinDirection]) {
 				case "horizontal":
 					rowManipulation = 0;
@@ -489,7 +497,6 @@ public class Connect_4 extends Application {
 					break;
 			}
 
-			//Checks if the last piece placed makes a winning connection diagonally from the top left to the bottom right
 			//Cycles through search areas until the maximum number of them has been reached
 			while (searchAreaCycle <= connect) {
 				//Checks the search area from left (firstIndex) to right
@@ -513,7 +520,8 @@ public class Connect_4 extends Application {
 						 * the loop and causing the search area to shift), because there is no point to keep
 						 * checking the search area since it already isn't all the same
 						 */
-						if (backBoard[recentRow + checkIndex*rowManipulation][recentCol + checkIndex*columnManipulation] != backBoard[recentRow][recentCol]) {
+						if (backBoard[recentRow + checkIndex*rowManipulation][recentCol + checkIndex*columnManipulation]
+								!= backBoard[recentRow][recentCol]) {
 							break;
 						}
 						/* If the piece being checked is the same then that is recorded in numberOfConnections and
